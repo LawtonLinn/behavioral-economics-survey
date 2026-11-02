@@ -1,0 +1,3304 @@
+{
+  "responses": [
+    {
+      "sessionId": "acf1142d-e0ff-4298-8575-dbccc624cee2",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T22:53:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 634,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 13766,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 10496,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 60875,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 3.5,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 13766,
+        "egbRatio": 0.35,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 60875
+      }
+    },
+    {
+      "sessionId": "8c06c6c2-d29d-4c59-80d4-116aa57cd548",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T22:54:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 530,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 10122,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 23226,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 64064,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 10122,
+        "egbRatio": 0.26,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 64064
+      }
+    },
+    {
+      "sessionId": "c85554fb-6203-4dbc-a5e4-7c1519210994",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T22:56:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 662,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 8816,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 13802,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 64790,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.25,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 8816,
+        "egbRatio": 0.22,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 64790
+      }
+    },
+    {
+      "sessionId": "609e9db4-c28b-43c4-b8e5-ffe861fb45b2",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T22:57:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 494,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 7391,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 24425,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 55010,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 7391,
+        "egbRatio": 0.19,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 55010
+      }
+    },
+    {
+      "sessionId": "fad5932f-48a4-4743-be30-b60841e20bde",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T22:59:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 673,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 12330,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 22079,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 37035,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 12330,
+        "egbRatio": 0.31,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 37035
+      }
+    },
+    {
+      "sessionId": "8ee2a902-2d29-4018-be94-7077cb12bf89",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:00:35.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 543,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 7116,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 16680,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 63666,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 7116,
+        "egbRatio": 0.18,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 63666
+      }
+    },
+    {
+      "sessionId": "932bd465-b609-4ae8-94ac-4e44b787d9a9",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:02:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 646,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 9105,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 22853,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 66626,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 9105,
+        "egbRatio": 0.23,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 66626
+      }
+    },
+    {
+      "sessionId": "cd54f0ef-501f-4b47-bfd3-2421c7d8c977",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:03:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 481,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 10440,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 23479,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 48027,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 2.5,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 10440,
+        "egbRatio": 0.26,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 48027
+      }
+    },
+    {
+      "sessionId": "575e7a51-5722-4398-97c6-dfe51d64e6b2",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:05:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 777,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 13931,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 11948,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 70369,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 2.5,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 13931,
+        "egbRatio": 0.35,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 70369
+      }
+    },
+    {
+      "sessionId": "dea408dd-c653-4da8-9f68-742d50983f02",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:06:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 429,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 11925,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 19628,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 70480,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 11925,
+        "egbRatio": 0.3,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 70480
+      }
+    },
+    {
+      "sessionId": "42668f56-b39b-47c6-991c-7da054e09265",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:08:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 620,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 42969,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 19009,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 58823,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 42969,
+        "egbRatio": 1.09,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 58823
+      }
+    },
+    {
+      "sessionId": "1f06859d-25a3-4536-bdf7-f2eea8dbf390",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:09:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 473,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 6536,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 16338,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 55889,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.25,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 6536,
+        "egbRatio": 0.17,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 55889
+      }
+    },
+    {
+      "sessionId": "1d92f3f5-75ca-4c59-8f8a-4a78ca409782",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:11:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 758,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 12926,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 21261,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 72565,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 12926,
+        "egbRatio": 0.33,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 72565
+      }
+    },
+    {
+      "sessionId": "02906ebb-45e5-4e09-a591-e4a31a40b3e6",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:12:35.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 468,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 7859,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 10564,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 70518,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 2.5,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 7859,
+        "egbRatio": 0.2,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 70518
+      }
+    },
+    {
+      "sessionId": "2f9660ad-afee-49db-b697-56d61d0c7edf",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:14:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 726,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 9699,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 10220,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 49006,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 9699,
+        "egbRatio": 0.25,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 49006
+      }
+    },
+    {
+      "sessionId": "38e2a638-6c30-40ba-a674-57d5e8c32636",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:15:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 405,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 8333,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 19743,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 75528,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.25,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 8333,
+        "egbRatio": 0.21,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 75528
+      }
+    },
+    {
+      "sessionId": "f2e4033f-15b8-40ce-911a-ad915b6d1f7f",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:17:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 666,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 39960,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 16155,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 64027,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 2.5,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 39960,
+        "egbRatio": 1.01,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 64027
+      }
+    },
+    {
+      "sessionId": "c1ddd615-e36f-4a52-88a1-bd144b8c7686",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:18:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 401,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 10924,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 13875,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 72563,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 10924,
+        "egbRatio": 0.28,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 72563
+      }
+    },
+    {
+      "sessionId": "8dcefa7b-67a0-4910-a1bf-c5de9959f090",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:20:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 606,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 24235,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 21556,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 38613,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 24235,
+        "egbRatio": 0.61,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 38613
+      }
+    },
+    {
+      "sessionId": "99355d39-2868-4c59-b3fd-a2ec14fe57c5",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:21:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 525,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 11768,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 13892,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 66190,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 11768,
+        "egbRatio": 0.3,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 66190
+      }
+    },
+    {
+      "sessionId": "c90e661e-4f8f-4dad-b76b-a467f81395b5",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:23:05.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 605,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 9529,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 10900,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 39728,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.25,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 9529,
+        "egbRatio": 0.24,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 39728
+      }
+    },
+    {
+      "sessionId": "d742dea4-3448-49ff-aa03-32b166b844ac",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:24:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 386,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 14987,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 13843,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 76099,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 14987,
+        "egbRatio": 0.38,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 76099
+      }
+    },
+    {
+      "sessionId": "966dd80c-9f9b-4a96-91f3-09ae5365aa34",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:26:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 651,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 18033,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 20032,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 40579,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 18033,
+        "egbRatio": 0.46,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 40579
+      }
+    },
+    {
+      "sessionId": "7193b2e6-a6b5-4c9d-a8ca-3f082a9d7787",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:27:35.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 546,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 6204,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 22315,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 36890,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 6204,
+        "egbRatio": 0.16,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 36890
+      }
+    },
+    {
+      "sessionId": "2c2577ff-c632-4a36-b0e7-e920b5379263",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:29:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 700,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 9706,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 15957,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 78053,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 9706,
+        "egbRatio": 0.25,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 78053
+      }
+    },
+    {
+      "sessionId": "1814e58d-3bb1-425a-bf79-71ee11edbd93",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:30:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 444,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 12473,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 22840,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 54559,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 12473,
+        "egbRatio": 0.32,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 54559
+      }
+    },
+    {
+      "sessionId": "bdd5163b-390a-4e7e-b4d7-18875f4f7a2b",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:32:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 631,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 13032,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 18978,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 37604,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 13032,
+        "egbRatio": 0.33,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 37604
+      }
+    },
+    {
+      "sessionId": "93713ee9-21d7-4bf4-a309-5b07830aeb7f",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:33:35.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 525,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 37871,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 24393,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 57961,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 2.5,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 37871,
+        "egbRatio": 0.96,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 57961
+      }
+    },
+    {
+      "sessionId": "326aa782-2108-4fd8-b848-373568a45d79",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:35:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 792,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 6339,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 24755,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 74146,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 6339,
+        "egbRatio": 0.16,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 74146
+      }
+    },
+    {
+      "sessionId": "4d9b869a-f9d7-4d93-8c86-aa35c7479cf6",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:36:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 384,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 10984,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 22160,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 63411,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.25,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 10984,
+        "egbRatio": 0.28,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 63411
+      }
+    },
+    {
+      "sessionId": "1c9c2064-28e1-4f80-8095-6f1f815910b6",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:38:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 747,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 10216,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 15816,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 51694,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.25,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 10216,
+        "egbRatio": 0.26,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 51694
+      }
+    },
+    {
+      "sessionId": "065ff707-0581-493c-8c97-410d028d2b92",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:39:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 406,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 6547,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 25156,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 35864,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 6547,
+        "egbRatio": 0.17,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 35864
+      }
+    },
+    {
+      "sessionId": "9cad6f07-b4f4-4338-93cc-0c73da274bed",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:41:05.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 604,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 10521,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 19194,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 57499,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 10521,
+        "egbRatio": 0.27,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 57499
+      }
+    },
+    {
+      "sessionId": "354feb34-2a6f-4ef0-b0b1-ea0d4b94c077",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:42:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 407,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          true,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 26528,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 10858,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 48902,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 26528,
+        "egbRatio": 0.67,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 48902
+      }
+    },
+    {
+      "sessionId": "a69d6cd9-3cc5-41aa-9927-1800e7158f5e",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:44:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 661,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 22650,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 16024,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 45756,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 2.5,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 22650,
+        "egbRatio": 0.57,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 45756
+      }
+    },
+    {
+      "sessionId": "d640e3e0-be95-49b4-9256-2bfcfce7942e",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:45:35.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 451,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 41248,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 20282,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 57100,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 41248,
+        "egbRatio": 1.05,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 57100
+      }
+    },
+    {
+      "sessionId": "c192cee5-e352-4dc8-98ea-7a07712c6eea",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:47:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 616,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 9641,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 23780,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 76092,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 2.5,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 9641,
+        "egbRatio": 0.24,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 76092
+      }
+    },
+    {
+      "sessionId": "ea02cbb4-f177-4f7d-974c-6f29886c40d8",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:48:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 527,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 26074,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 25399,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 39358,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.25,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 26074,
+        "egbRatio": 0.66,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 39358
+      }
+    },
+    {
+      "sessionId": "97a5eb16-0557-42a3-8acc-1684f814548b",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:50:05.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 619,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 39415,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 25304,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 54463,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 39415,
+        "egbRatio": 1,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 54463
+      }
+    },
+    {
+      "sessionId": "26164ce8-9418-4251-8d61-ad253a66548a",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:51:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 550,
+        "framing_discount_choice": "credit",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 6062,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 12387,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 41568,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.25,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 6062,
+        "egbRatio": 0.15,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 41568
+      }
+    },
+    {
+      "sessionId": "77e5333d-3a98-4790-a057-cc1018d580ab",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:53:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 723,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 42303,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 15180,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 59880,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 42303,
+        "egbRatio": 1.07,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 59880
+      }
+    },
+    {
+      "sessionId": "e3fddc6e-687a-4929-8c13-3fb639c7c9e5",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:54:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 529,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 19251,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 12483,
+        "confidence_rating": 5
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 42444,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.25,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 19251,
+        "egbRatio": 0.49,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 42444
+      }
+    },
+    {
+      "sessionId": "75f40d1e-2d63-447d-87ae-a5689fba6631",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:56:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 636,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 7038,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 18968,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 64985,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 7038,
+        "egbRatio": 0.18,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 64985
+      }
+    },
+    {
+      "sessionId": "0e37eecf-6254-422d-89d5-e6ad9fd13775",
+      "cohort": "Beta",
+      "timestamp": "2026-11-01T23:57:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 402,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 41063,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 23101,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 58699,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.25,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 41063,
+        "egbRatio": 1.04,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 58699
+      }
+    },
+    {
+      "sessionId": "fd44a0d7-98cc-4e10-ba99-6d5526787905",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-01T23:59:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 723,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 14922,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 17344,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 52025,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 3.5,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 14922,
+        "egbRatio": 0.38,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 52025
+      }
+    },
+    {
+      "sessionId": "fcab9bba-8664-4640-b6ae-cc1b32d67e65",
+      "cohort": "Beta",
+      "timestamp": "2026-11-02T00:00:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 485,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 6635,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 21187,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 70208,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.25,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 6635,
+        "egbRatio": 0.17,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 70208
+      }
+    },
+    {
+      "sessionId": "72f0d7bd-c856-4b51-96cb-91c5b131fd43",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-02T00:02:05.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 699,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 12156,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 12025,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 37898,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 12156,
+        "egbRatio": 0.31,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 37898
+      }
+    },
+    {
+      "sessionId": "e46d5f1c-8e3e-4d6d-b4ac-9264ba30aeb0",
+      "cohort": "Beta",
+      "timestamp": "2026-11-02T00:03:35.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 466,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 25171,
+        "real_option_choice": "invest_now",
+        "option_switch_threshold": 21519,
+        "confidence_rating": 3
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 57709,
+        "switchCount": 2,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.67,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 25171,
+        "egbRatio": 0.64,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": false,
+        "optionInsight": "Value Maximizer",
+        "totalReactionTimeMs": 57709
+      }
+    },
+    {
+      "sessionId": "f18b198b-8716-4576-9272-6d20a5b6af7e",
+      "cohort": "Alpha",
+      "timestamp": "2026-11-02T00:05:05.269Z",
+      "responses": {
+        "framing_job_choice": "A",
+        "anchoring_valuation_estimate": 586,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "hold_for_breakeven",
+        "delay_growth_estimate": 6828,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 20485,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 46549,
+        "switchCount": 1,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 2.5,
+        "isRiskAverse": true,
+        "isRiskSeeking": false,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 6828,
+        "egbRatio": 0.17,
+        "egbCategory": "Linear Bias (Severely Underestimated)",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 46549
+      }
+    },
+    {
+      "sessionId": "ac765b25-1d38-49ae-95b8-5872e4a417b2",
+      "cohort": "Beta",
+      "timestamp": "2026-11-02T00:06:35.269Z",
+      "responses": {
+        "framing_job_choice": "B",
+        "anchoring_valuation_estimate": 510,
+        "framing_discount_choice": "cash",
+        "loss_aversion_gambles": [
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "loss_aversion_sunk_choice": "sell_and_reallocate",
+        "delay_growth_estimate": 23424,
+        "real_option_choice": "wait_for_information",
+        "option_switch_threshold": 12969,
+        "confidence_rating": 4
+      },
+      "telemetry": {
+        "totalReactionTimeMs": 68711,
+        "switchCount": 0,
+        "device": "Web Browser",
+        "stepTimes": [
+          {
+            "stepId": "framing_jobs",
+            "reactionTimeMs": 8000,
+            "switches": 1
+          },
+          {
+            "stepId": "anchoring_quote",
+            "reactionTimeMs": 6500,
+            "switches": 0
+          },
+          {
+            "stepId": "loss_lotteries",
+            "reactionTimeMs": 12000,
+            "switches": 1
+          },
+          {
+            "stepId": "rule72_delay",
+            "reactionTimeMs": 9000,
+            "switches": 0
+          },
+          {
+            "stepId": "real_options",
+            "reactionTimeMs": 11000,
+            "switches": 1
+          }
+        ]
+      },
+      "metrics": {
+        "lambda": 1.25,
+        "isRiskAverse": false,
+        "isRiskSeeking": true,
+        "trueCostOfDelay": 39408,
+        "userEstimate": 23424,
+        "egbRatio": 0.59,
+        "egbCategory": "Accurate Compounding Intuition",
+        "choseWait": true,
+        "optionInsight": "Safety First (Certainty Bias)",
+        "totalReactionTimeMs": 68711
+      }
+    }
+  ]
+}
