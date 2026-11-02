@@ -10,6 +10,10 @@ const state = {
   isSubmitted: false,
   personalMetrics: null,
   
+  // Researcher Admin Security
+  isAdmin: !!sessionStorage.getItem('veritas_admin_pin'),
+  adminPin: sessionStorage.getItem('veritas_admin_pin') || '',
+  
   // Responses
   responses: {
     framing_job_choice: null, // 'A' | 'B'
@@ -28,15 +32,15 @@ const state = {
 };
 
 const STEPS = [
-  { id: 'welcome', name: 'Start' },
-  { id: 'framing_jobs', name: 'Rescue Plan' },
-  { id: 'anchoring_quote', name: 'House Value' },
-  { id: 'framing_discount', name: 'Store Checkout' },
-  { id: 'loss_lotteries', name: 'Coin Tosses' },
-  { id: 'loss_sunk', name: 'Selling Dilemma' },
-  { id: 'rule72_delay', name: 'Waiting Cost' },
-  { id: 'real_options', name: 'Bakery Decision' },
-  { id: 'debrief', name: 'Your Results' }
+  { id: 'welcome', name: 'Start', emoji: '🚀' },
+  { id: 'framing_jobs', name: 'Rescue Plan', emoji: '🏭' },
+  { id: 'anchoring_quote', name: 'House Value', emoji: '🏡' },
+  { id: 'framing_discount', name: 'Store Checkout', emoji: '🛒' },
+  { id: 'loss_lotteries', name: 'Coin Tosses', emoji: '🪙' },
+  { id: 'loss_sunk', name: 'Selling Dilemma', emoji: '📦' },
+  { id: 'rule72_delay', name: 'Waiting Cost', emoji: '📈' },
+  { id: 'real_options', name: 'Bakery Decision', emoji: '🥐' },
+  { id: 'debrief', name: 'Your Results', emoji: '🧠' }
 ];
 
 function showToast(msg) {
@@ -60,28 +64,40 @@ async function initSession() {
     state.sessionId = data.sessionId;
     state.cohort = data.cohort;
     telemetry.initSession(state.sessionId, state.cohort);
-    updatePulseText();
+    updateAdminButton();
     render();
   } catch (err) {
-    console.error('Session init error:', err);
     state.sessionId = 'session-' + Date.now();
     state.cohort = Math.random() < 0.5 ? 'Alpha' : 'Beta';
     telemetry.initSession(state.sessionId, state.cohort);
+    updateAdminButton();
     render();
   }
 }
 
-function updatePulseText() {
-  const el = document.getElementById('telemetryStatus');
-  if (el) {
-    el.innerHTML = `
-      <span class="pulse-dot"></span>
-      Ready • Cohort ${state.cohort || 'Alpha'}
-    `;
+function updateAdminButton() {
+  const icon = document.getElementById('adminLockIcon');
+  const text = document.getElementById('adminLockText');
+  const btn = document.getElementById('adminLockBtn');
+  if (!btn) return;
+  
+  if (state.isAdmin) {
+    btn.classList.add('logged-in');
+    if (state.mode === 'analytics') {
+      icon.innerText = '←';
+      text.innerText = 'Exit Admin';
+    } else {
+      icon.innerText = '📊';
+      text.innerText = 'Researcher Portal';
+    }
+  } else {
+    btn.classList.remove('logged-in');
+    icon.innerText = '🔒';
+    text.innerText = 'Researcher Access';
   }
 }
 
-// Keyboard shortcuts (1 and 2)
+// Global Keyboard Navigation
 window.addEventListener('keydown', (e) => {
   if (state.mode !== 'survey' || state.currentStepIndex === 0 || state.currentStepIndex >= STEPS.length - 1) return;
   if (e.key === '1') handleKeySelection(1);
@@ -171,17 +187,16 @@ async function submitSurvey() {
     const data = await res.json();
     state.isSubmitted = true;
     state.personalMetrics = data.personalMetrics;
-    state.currentStepIndex = STEPS.length - 1; // Debrief screen
+    state.currentStepIndex = STEPS.length - 1;
     render();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    showToast('Calculated your personal decision profile!');
+    showToast('Results calculated!');
   } catch (err) {
-    console.error('Submission failed:', err);
-    showToast('Network error, please retry.');
+    showToast('Error saving response. Please retry.');
   }
 }
 
-// User Action Bindings
+// User Actions
 window.selectJobChoice = (choice) => {
   telemetry.recordOptionSelection(choice);
   state.responses.framing_job_choice = choice;
@@ -217,6 +232,96 @@ window.setConfidenceRating = (rating) => {
   render();
 };
 
+// Admin Password Gate
+window.promptAdminLogin = () => {
+  if (state.isAdmin) {
+    if (state.mode === 'analytics') {
+      window.switchMode('survey');
+    } else {
+      window.switchMode('analytics');
+    }
+    return;
+  }
+
+  // Show PIN entry modal
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.id = 'pinModal';
+  modal.innerHTML = `
+    <div class="modal-content" style="max-width: 380px; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔒</div>
+      <h3 style="color: #fff; font-size: 1.35rem; font-weight: 800; margin-bottom: 0.4rem;">Researcher Access</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        Enter your secret Admin PIN to view aggregate responses and analytics:
+      </p>
+
+      <input type="password" 
+             id="adminPinInput" 
+             placeholder="Enter PIN (e.g. 2026)" 
+             style="width: 100%; text-align: center; font-size: 1.5rem; letter-spacing: 0.25em; padding: 0.85rem; border-radius: 12px; background: rgba(10,14,26,0.95); border: 2px solid rgba(255,255,255,0.2); color: #fff; outline: none; margin-bottom: 1.25rem;" 
+             autofocus />
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn-secondary" style="flex: 1;" onclick="document.getElementById('pinModal').remove()">
+          Cancel
+        </button>
+        <button class="btn-primary" style="flex: 1; justify-content: center;" onclick="window.submitAdminPin()">
+          Unlock →
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => {
+    const input = document.getElementById('adminPinInput');
+    if (input) {
+      input.focus();
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') window.submitAdminPin();
+      });
+    }
+  }, 100);
+};
+
+window.submitAdminPin = async () => {
+  const input = document.getElementById('adminPinInput');
+  if (!input) return;
+  const pin = input.value.trim();
+
+  try {
+    const res = await fetch('/api/admin/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin })
+    });
+    const data = await res.json();
+    if (data.success) {
+      state.isAdmin = true;
+      state.adminPin = pin;
+      sessionStorage.setItem('veritas_admin_pin', pin);
+      document.getElementById('pinModal')?.remove();
+      showToast('Unlocked Researcher Dashboard!');
+      window.switchMode('analytics');
+    } else {
+      input.style.borderColor = '#f43f5e';
+      showToast('Incorrect PIN. Access Denied.');
+    }
+  } catch (err) {
+    showToast('Connection error.');
+  }
+};
+
+window.switchMode = (mode) => {
+  if (mode === 'analytics' && !state.isAdmin) {
+    window.promptAdminLogin();
+    return;
+  }
+  state.mode = mode;
+  updateAdminButton();
+  render();
+};
+
 function render() {
   const container = document.getElementById('mainApp');
   if (!container) return;
@@ -229,7 +334,7 @@ function render() {
 }
 
 // -------------------------------------------------------------
-// USER-FRIENDLY SURVEY VIEWS (EVERYDAY LANGUAGE, NO JARGON)
+// USER-FRIENDLY SURVEY VIEWS
 // -------------------------------------------------------------
 function renderSurveyView(container) {
   const step = STEPS[state.currentStepIndex];
@@ -242,19 +347,19 @@ function renderSurveyView(container) {
   if (step.id === 'welcome') {
     stepHtml = `
       <div class="survey-card">
-        <span class="badge-tag cyan">2-Minute Decision Challenge</span>
+        <span class="badge-tag cyan">✨ 2-Minute Decision Challenge</span>
         <h1 class="survey-title">The Everyday Decision Game</h1>
         <p class="survey-description">
-          Welcome! You are about to face 7 quick, everyday choices involving money, gut instincts, and risk.
+          Welcome! You are about to face 7 quick real-life choices involving gut instincts, risk, and everyday dilemmas.
         </p>
 
         <div class="scenario-box">
-          <p style="margin-bottom: 0.5rem;"><strong>How it works:</strong></p>
-          <ul style="padding-left: 1.25rem; line-height: 1.7; font-size: 0.95rem; color: #cbd5e1;">
-            <li><strong>No math or finance skills required:</strong> Anyone can do this.</li>
-            <li><strong>Takes 2–3 minutes:</strong> Quick and straightforward questions.</li>
-            <li><strong>Go with your gut:</strong> There are no wrong answers—just how your brain naturally reacts.</li>
-            <li><strong>Instant Personal Breakdown:</strong> Right after the last question, you will see your own unique <strong>Decision Personality</strong>!</li>
+          <p style="margin-bottom: 0.5rem; font-weight: 700; color: #fff;">What to expect:</p>
+          <ul style="padding-left: 1.25rem; line-height: 1.7; font-size: 0.98rem; color: #cbd5e1;">
+            <li><strong>No finance or math skills required:</strong> Just pick what feels right to you.</li>
+            <li><strong>Super quick:</strong> Takes only about 2 minutes.</li>
+            <li><strong>100% Anonymous:</strong> Your responses are completely private.</li>
+            <li><strong>Your Results at the End:</strong> Immediately after the last question, you will unlock your personal <strong>Decision Personality</strong>!</li>
           </ul>
         </div>
 
@@ -267,31 +372,31 @@ function renderSurveyView(container) {
     `;
   }
 
-  // 2. QUESTION 1: RESCUE PLAN (FRAMING EFFECT)
+  // 2. RESCUE PLAN (FRAMING)
   else if (step.id === 'framing_jobs') {
     const isGain = isAlpha;
     stepHtml = `
       <div class="survey-card">
         <span class="badge-tag ${isGain ? 'cyan' : 'rose'}">
-          Scenario 1 of 7
+          ${step.emoji} Scenario 1 of 7
         </span>
         <h2 class="survey-title">The Factory Emergency</h2>
         <p class="survey-description">
-          A local manufacturing company with <strong>600 employees</strong> is in danger of closing down completely. 
-          The town leaders must choose between two emergency rescue plans:
+          A local manufacturing plant with <strong>600 employees</strong> is in danger of closing down completely. 
+          Town leaders must choose between two emergency rescue plans:
         </p>
 
         <div class="scenario-box ${isGain ? '' : 'loss'}">
           ${isGain ? `
-            <strong>Gain Frame:</strong> If enacted:
+            <strong>The Rescue Options:</strong>
             <ul style="margin-top: 0.5rem; padding-left: 1.25rem;">
               <li><strong>Plan A:</strong> Guaranteed to <strong>save 200 jobs</strong> for certain.</li>
-              <li><strong>Plan B:</strong> A <strong>1-in-3 chance</strong> that all 600 jobs are saved, but a <strong>2-in-3 chance</strong> that no jobs are saved.</li>
+              <li><strong>Plan B:</strong> A <strong>1-in-3 chance</strong> that all 600 jobs are saved, but a <strong>2-in-3 chance</strong> that zero jobs are saved.</li>
             </ul>
           ` : `
-            <strong>Loss Frame:</strong> If enacted:
+            <strong>The Rescue Options:</strong>
             <ul style="margin-top: 0.5rem; padding-left: 1.25rem;">
-              <li><strong>Plan A:</strong> Exactly <strong>400 people will definitely lose their jobs</strong>.</li>
+              <li><strong>Plan A:</strong> Exactly <strong>400 employees will definitely lose their jobs</strong>.</li>
               <li><strong>Plan B:</strong> A <strong>1-in-3 chance</strong> that nobody loses their job, but a <strong>2-in-3 chance</strong> that all 600 people will lose their jobs.</li>
             </ul>
           `}
@@ -339,21 +444,21 @@ function renderSurveyView(container) {
     `;
   }
 
-  // 3. QUESTION 2: HOUSE PRICE (PRICE ANCHORING)
+  // 3. HOUSE PRICE (ANCHORING)
   else if (step.id === 'anchoring_quote') {
     const isHigh = isAlpha;
-    const anchorVal = isHigh ? 850 : 350; // In thousands ($850k vs $350k)
+    const anchorVal = isHigh ? 850 : 350;
 
     stepHtml = `
       <div class="survey-card">
-        <span class="badge-tag amber">Scenario 2 of 7</span>
+        <span class="badge-tag amber">${step.emoji} Scenario 2 of 7</span>
         <h2 class="survey-title">What is This House Worth?</h2>
         <p class="survey-description">
           A newly built modern 4-bedroom house with a big backyard, pool, and solar panels is being put on the market in a quiet suburban town.
         </p>
 
         <div class="scenario-box amber">
-          <strong>The Agent's Quick Mention:</strong>
+          <strong>The Agent's Comment:</strong>
           <p style="margin-top: 0.35rem;">
             A local real estate agent took a quick look and remarked: 
             <em style="color: #fff; font-size: 1.05rem;">"Hmm, I could see this listing for around <strong>$${anchorVal},000</strong>."</em>
@@ -362,8 +467,8 @@ function renderSurveyView(container) {
 
         <div class="input-estimation-box">
           <div class="input-label-row">
-            <span style="font-weight: 600; color: #fff;">Based on your gut, what do you think it is really worth?</span>
-            <span style="color: var(--accent-amber); font-family: var(--font-mono); font-size: 0.85rem;">(In Thousands of Dollars)</span>
+            <span style="font-weight: 700; color: #fff;">Based on your gut, what do you think it is really worth?</span>
+            <span style="color: var(--accent-amber); font-family: var(--font-mono); font-size: 0.85rem;">(In Thousands $)</span>
           </div>
           <div class="currency-input-wrap">
             <span class="currency-symbol">$</span>
@@ -389,12 +494,12 @@ function renderSurveyView(container) {
     `;
   }
 
-  // 4. QUESTION 3: STORE CHECKOUT (PAYMENT FRAMING)
+  // 4. STORE CHECKOUT (PAYMENT FRAMING)
   else if (step.id === 'framing_discount') {
     const isDiscount = isAlpha;
     stepHtml = `
       <div class="survey-card">
-        <span class="badge-tag cyan">Scenario 3 of 7</span>
+        <span class="badge-tag cyan">${step.emoji} Scenario 3 of 7</span>
         <h2 class="survey-title">The Store Checkout</h2>
         <p class="survey-description">
           You are at the register paying for a cart of supplies.
@@ -450,7 +555,7 @@ function renderSurveyView(container) {
     `;
   }
 
-  // 5. QUESTION 4: COIN TOSS GAMBLE LADDER (LOSS AVERSION)
+  // 5. COIN TOSS (LOSS AVERSION)
   else if (step.id === 'loss_lotteries') {
     const lotteries = [
       { loss: 30, ev: 'You win +$35 on average' },
@@ -478,7 +583,7 @@ function renderSurveyView(container) {
             </button>
             <button class="btn-gamble reject ${choice === false ? 'selected' : ''}" 
                     onclick="window.toggleGambleChoice(${i}, false)">
-              Pass (No Way)
+              Pass (No)
             </button>
           </div>
         </div>
@@ -487,7 +592,7 @@ function renderSurveyView(container) {
 
     stepHtml = `
       <div class="survey-card">
-        <span class="badge-tag emerald">Scenario 4 of 7</span>
+        <span class="badge-tag emerald">${step.emoji} Scenario 4 of 7</span>
         <h2 class="survey-title">The 50/50 Coin Flip Challenge</h2>
         <p class="survey-description">
           Imagine someone hands you a real coin right now.
@@ -515,19 +620,19 @@ function renderSurveyView(container) {
     `;
   }
 
-  // 6. QUESTION 5: SELLING THE LOSING ITEM (SUNK COST)
+  // 6. SELLING DILEMMA (SUNK COST)
   else if (step.id === 'loss_sunk') {
     stepHtml = `
       <div class="survey-card">
-        <span class="badge-tag emerald">Scenario 5 of 7</span>
+        <span class="badge-tag emerald">${step.emoji} Scenario 5 of 7</span>
         <h2 class="survey-title">The Depreciated Item</h2>
         <p class="survey-description">
-          A few months ago, you spent <strong>$100</strong> on a collectible item (or event ticket).
+          A few months ago, you spent <strong>$100</strong> on a collectible item (or ticket).
           Its value has unexpectedly dropped to <strong>$65</strong> (you are down $35).
         </p>
 
         <div class="scenario-box">
-          A trustworthy friend offers you a spot in a hot new deal that is almost guaranteed to make you <strong>+$25 clean profit</strong>, but you only have enough cash if you sell your original item today for $65.
+          A friend offers you a spot in a hot new deal that is almost guaranteed to make you <strong>+$25 clean profit</strong>, but you only have enough cash if you sell your original item today for $65.
           <br/><br/>
           Meanwhile, experts say your original item will probably never get back to $100 anytime soon.
         </div>
@@ -572,11 +677,11 @@ function renderSurveyView(container) {
     `;
   }
 
-  // 7. QUESTION 6: COST OF DELAY & RULE OF 72
+  // 7. WAITING COST (RULE OF 72)
   else if (step.id === 'rule72_delay') {
     stepHtml = `
       <div class="survey-card">
-        <span class="badge-tag violet">Scenario 6 of 7</span>
+        <span class="badge-tag violet">${step.emoji} Scenario 6 of 7</span>
         <h2 class="survey-title">The Magic Doubling Trick (Rule of 72)</h2>
         <p class="survey-description">
           There is a famous math trick called the <strong>Rule of 72</strong>:
@@ -598,7 +703,7 @@ function renderSurveyView(container) {
 
         <div class="input-estimation-box">
           <div class="input-label-row">
-            <span style="font-weight: 600; color: #fff;">Your Gut Guess (Dollars Lost by Waiting):</span>
+            <span style="font-weight: 700; color: #fff;">Your Gut Guess (Dollars Lost by Waiting):</span>
             <span style="color: var(--accent-violet); font-family: var(--font-mono); font-size: 0.85rem;">(USD $)</span>
           </div>
           <div class="currency-input-wrap">
@@ -617,18 +722,18 @@ function renderSurveyView(container) {
         <div class="survey-footer">
           <button class="btn-secondary" onclick="window.prevStep()">← Previous</button>
           <button class="btn-primary" onclick="window.advanceStep()" ${!state.responses.delay_growth_estimate ? 'disabled' : ''}>
-            Next Question (Final!) →
+            Final Question! →
           </button>
         </div>
       </div>
     `;
   }
 
-  // 8. QUESTION 7: REAL OPTIONS & COST OF WAITING (THE BAKERY CAFE)
+  // 8. BAKERY DILEMMA (REAL OPTIONS)
   else if (step.id === 'real_options') {
     stepHtml = `
       <div class="survey-card">
-        <span class="badge-tag violet">Scenario 7 of 7 (Final Question!)</span>
+        <span class="badge-tag violet">${step.emoji} Scenario 7 of 7 (Final Question!)</span>
         <h2 class="survey-title">The Bakery & The Subway Station</h2>
         <p class="survey-description">
           You have an opportunity to open a brand-new specialty bakery cafe in a busy new shopping plaza. 
@@ -638,8 +743,8 @@ function renderSurveyView(container) {
         <div class="scenario-box violet">
           The city is voting in 12 months on whether to build a new subway station right in front of your shop:
           <ul style="margin-top: 0.5rem; padding-left: 1.25rem;">
-            <li><strong>If Subway Station Passes (50% chance):</strong> Foot traffic explodes. The shop makes a huge <strong>$140,000</strong> payoff (+$90,000 profit!).</li>
-            <li><strong>If Subway Station Fails (50% chance):</strong> Foot traffic is dead. The shop only makes <strong>$20,000</strong> (-$30,000 loss).</li>
+            <li><strong>If Subway Passes (50% chance):</strong> Foot traffic explodes. The shop makes a huge <strong>$140,000</strong> payoff (+$90,000 profit!).</li>
+            <li><strong>If Subway Fails (50% chance):</strong> Foot traffic is dead. The shop only makes <strong>$20,000</strong> (-$30,000 loss).</li>
           </ul>
           <p style="margin-top: 0.75rem; color: #fff;">
             <strong>Your Options:</strong>
@@ -681,7 +786,7 @@ function renderSurveyView(container) {
 
         <div class="input-estimation-box" style="margin-top: 1.5rem;">
           <div class="input-label-row">
-            <span style="font-weight: 600; color: #fff;">How much would you be willing to pay for certainty?</span>
+            <span style="font-weight: 700; color: #fff;">How much would you be willing to pay for certainty?</span>
             <span style="color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 700;">
               $${state.responses.option_switch_threshold.toLocaleString()}
             </span>
@@ -708,7 +813,7 @@ function renderSurveyView(container) {
     `;
   }
 
-  // 9. SCREEN 9: FRIENDLY DEBRIEF & BEHAVIORAL PROFILE
+  // 9. DEBRIEF
   else if (step.id === 'debrief') {
     const m = state.personalMetrics || {};
     const lambda = m.lambda || 2.0;
@@ -729,7 +834,7 @@ function renderSurveyView(container) {
       <div class="survey-card" style="padding-top: 2.5rem;">
         <div class="debrief-hero">
           <div class="debrief-avatar-badge">🧠</div>
-          <span class="badge-tag cyan">Challenge Complete!</span>
+          <span class="badge-tag cyan">🎉 Challenge Complete!</span>
           <h1 class="survey-title" style="font-size: 2rem;">Your Decision Personality</h1>
           <p class="survey-description" style="max-width: 620px; margin: 0 auto 1.5rem;">
             Here is what your gut choices reveal about how your brain handles risk, money, and time:
@@ -737,11 +842,10 @@ function renderSurveyView(container) {
         </div>
 
         <div class="debrief-grid">
-          <!-- Card 1: Loss Sensitivity -->
           <div class="debrief-card">
             <div class="debrief-metric-header">
               <span class="badge-tag emerald">Loss Sensitivity</span>
-              <span style="font-size: 1.2rem;">⚖️</span>
+              <span style="font-size: 1.3rem;">⚖️</span>
             </div>
             <div class="debrief-metric-value">
               ${lambda}x
@@ -752,13 +856,12 @@ function renderSurveyView(container) {
             </div>
           </div>
 
-          <!-- Card 2: Compounding Trick -->
           <div class="debrief-card">
             <div class="debrief-metric-header">
               <span class="badge-tag violet">Waiting Cost</span>
-              <span style="font-size: 1.2rem;">⏳</span>
+              <span style="font-size: 1.3rem;">⏳</span>
             </div>
-            <div class="debrief-metric-value" style="color: ${est < 25000 ? 'var(--accent-rose)' : 'var(--accent-emerald)'};">
+            <div class="debrief-metric-value" style="color: ${est < 25000 ? '#fb7185' : '#34d399'};">
               $${est.toLocaleString()}
             </div>
             <div class="debrief-metric-title">${m.egbCategory || 'Exponential Effect'}</div>
@@ -768,11 +871,10 @@ function renderSurveyView(container) {
             </div>
           </div>
 
-          <!-- Card 3: Real Options -->
           <div class="debrief-card">
             <div class="debrief-metric-header">
               <span class="badge-tag cyan">Certainty Value</span>
-              <span style="font-size: 1.2rem;">🎯</span>
+              <span style="font-size: 1.3rem;">🎯</span>
             </div>
             <div class="debrief-metric-value">
               $${state.responses.option_switch_threshold.toLocaleString()}
@@ -784,16 +886,13 @@ function renderSurveyView(container) {
           </div>
         </div>
 
-        <div style="background: rgba(15,23,42,0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-          <div>
-            <h4 style="color: #fff; margin-bottom: 0.25rem;">Thanks for participating!</h4>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">
-              Your anonymous response has been saved and added to the research study.
-            </p>
-          </div>
-          <button class="btn-primary" onclick="window.switchMode('analytics')">
-            View Live Results Dashboard →
-          </button>
+        <div style="background: rgba(22,30,52,0.9); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.75rem; text-align: center;">
+          <h3 style="color: #fff; font-size: 1.25rem; font-weight: 800; margin-bottom: 0.4rem;">
+            Thank you for taking the survey! 🙌
+          </h3>
+          <p style="font-size: 0.95rem; color: #cbd5e1; max-width: 500px; margin: 0 auto;">
+            Your anonymous responses have been successfully recorded for the research study.
+          </p>
         </div>
       </div>
     `;
@@ -805,8 +904,8 @@ function renderSurveyView(container) {
       <div class="survey-wrapper">
         <div class="survey-progress-bar-container">
           <div class="progress-meta">
-            <span class="step-name">${step.name}</span>
-            <span style="font-family: var(--font-mono);">${state.currentStepIndex} of ${STEPS.length - 2}</span>
+            <span class="step-name">${step.emoji} ${step.name}</span>
+            <span style="font-family: var(--font-mono); font-size: 0.85rem;">Question ${state.currentStepIndex} of ${STEPS.length - 2}</span>
           </div>
           <div class="progress-track">
             <div class="progress-fill" style="width: ${progressPct}%;"></div>
@@ -832,18 +931,26 @@ function renderConfidencePicker() {
   }
   return `
     <div class="confidence-box">
-      <span style="font-size: 0.88rem; color: var(--text-muted);">How confident do you feel in this choice?</span>
+      <span style="font-size: 0.9rem; font-weight: 600; color: #cbd5e1;">How confident do you feel in this choice?</span>
       <div class="confidence-stars">${starsHtml}</div>
     </div>
   `;
 }
 
 // -------------------------------------------------------------
-// RESEARCHER ANALYTICS PORTAL
+// RESEARCHER ANALYTICS (PROTECTED BEHIND PIN)
 // -------------------------------------------------------------
 async function fetchAnalytics() {
   try {
-    const res = await fetch('/api/survey/analytics');
+    const res = await fetch('/api/survey/analytics', {
+      headers: { 'X-Admin-Pin': state.adminPin }
+    });
+    if (res.status === 401) {
+      state.isAdmin = false;
+      sessionStorage.removeItem('veritas_admin_pin');
+      window.promptAdminLogin();
+      return;
+    }
     const json = await res.json();
     state.analyticsData = json.data;
   } catch (err) {
@@ -865,10 +972,10 @@ async function renderAnalyticsPortal(container) {
     <div class="analytics-wrapper">
       <div class="analytics-header-row">
         <div>
-          <span class="badge-tag cyan">Live Research Dashboard</span>
-          <h1 style="font-size: 1.85rem; font-weight: 800; color: #fff;">Behavioral Analytics</h1>
-          <p style="font-size: 0.9rem; color: var(--text-muted);">
-            Immediate statistical synthesis of Framing Effects, Loss Aversion, and Cost of Delay.
+          <span class="badge-tag cyan">🔒 Private Researcher Portal</span>
+          <h1 style="font-size: 2rem; font-weight: 900; color: #fff;">Behavioral Analytics Dashboard</h1>
+          <p style="font-size: 0.92rem; color: #94a3b8;">
+            Live statistical synthesis of Framing Effects, Loss Aversion, and Cost of Delay.
           </p>
         </div>
 
@@ -898,25 +1005,25 @@ async function renderAnalyticsPortal(container) {
 
         <div class="kpi-card">
           <div class="kpi-title">Framing Shift (Δ%)</div>
-          <div class="kpi-number" style="color: var(--accent-cyan);">+${fr.framingShiftDelta || 0}%</div>
+          <div class="kpi-number" style="color: #38bdf8;">+${fr.framingShiftDelta || 0}%</div>
           <div class="kpi-subtext">χ² = ${fr.chiSquare || 0} (p = ${fr.pValue ?? 1})</div>
         </div>
 
         <div class="kpi-card">
           <div class="kpi-title">Avg Loss Sensitivity (λ)</div>
-          <div class="kpi-number" style="color: var(--accent-emerald);">${loss.meanLambda || 0}x</div>
+          <div class="kpi-number" style="color: #34d399;">${loss.meanLambda || 0}x</div>
           <div class="kpi-subtext">Benchmark: 2.25x | Median: ${loss.medianLambda || 0}x</div>
         </div>
 
         <div class="kpi-card">
           <div class="kpi-title">Linear Growth Bias</div>
-          <div class="kpi-number" style="color: var(--accent-rose);">${delay.linearBiasProportion || 0}%</div>
+          <div class="kpi-number" style="color: #fb7185;">${delay.linearBiasProportion || 0}%</div>
           <div class="kpi-subtext">Underestimate Cost of Waiting</div>
         </div>
 
         <div class="kpi-card">
-          <div class="kpi-title">Median Time to Complete</div>
-          <div class="kpi-number" style="color: var(--accent-amber);">${Math.round((tele.medianLatencyMs || 0) / 1000)}s</div>
+          <div class="kpi-title">Median Completion Time</div>
+          <div class="kpi-number" style="color: #fbbf24;">${Math.round((tele.medianLatencyMs || 0) / 1000)}s</div>
           <div class="kpi-subtext">Fast 2-3 minute survey</div>
         </div>
       </div>
@@ -983,13 +1090,13 @@ async function renderAnalyticsPortal(container) {
       <div class="data-table-card">
         <div class="table-header-row">
           <div>
-            <h3 style="color: #fff; font-size: 1.15rem; font-weight: 700;">Participant Responses</h3>
-            <p style="font-size: 0.82rem; color: var(--text-muted);">
-              Anonymous records with sub-second decision latencies
+            <h3 style="color: #fff; font-size: 1.25rem; font-weight: 800;">Participant Responses</h3>
+            <p style="font-size: 0.85rem; color: #94a3b8;">
+              Individual records with sub-second decision latencies
             </p>
           </div>
           <select id="cohortFilterSelect" 
-                  style="background: var(--bg-secondary); border: 1px solid var(--border-color); color: #fff; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.85rem;"
+                  style="background: var(--bg-secondary); border: 1px solid var(--border-color); color: #fff; padding: 0.45rem 0.85rem; border-radius: 8px; font-size: 0.85rem;"
                   onchange="window.filterTable(this.value)">
             <option value="all">All Cohorts (α & β)</option>
             <option value="Alpha">Cohort Alpha (Gain/High)</option>
@@ -1021,7 +1128,9 @@ async function loadResponsesTable() {
     if (state.activeFilterCohort && state.activeFilterCohort !== 'all') {
       url += `?cohort=${state.activeFilterCohort}`;
     }
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      headers: { 'X-Admin-Pin': state.adminPin }
+    });
     const data = await res.json();
     const rows = data.responses || [];
     const container = document.getElementById('tableContainer');
@@ -1029,7 +1138,7 @@ async function loadResponsesTable() {
 
     if (rows.length === 0) {
       container.innerHTML = `
-        <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+        <div style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
           No participant records yet. Take the survey or click "Seed 50 Demo Responses"!
         </div>
       `;
@@ -1048,17 +1157,17 @@ async function loadResponsesTable() {
             ${(r.sessionId || '').substring(0, 8)}...
           </td>
           <td>
-            <span class="badge-tag ${isAlpha ? 'cyan' : 'rose'}" style="margin: 0; padding: 0.15rem 0.4rem; font-size: 0.65rem;">
+            <span class="badge-tag ${isAlpha ? 'cyan' : 'rose'}" style="margin: 0; padding: 0.2rem 0.5rem; font-size: 0.7rem;">
               ${r.cohort}
             </span>
           </td>
-          <td style="font-weight: 600;">
+          <td style="font-weight: 700;">
             Plan ${r.responses?.framing_job_choice || '-'}
           </td>
           <td>
             $${r.responses?.anchoring_valuation_estimate || '-'}k
           </td>
-          <td style="font-family: var(--font-mono); font-weight: 700; color: var(--accent-emerald);">
+          <td style="font-family: var(--font-mono); font-weight: 800; color: #34d399;">
             ${m.lambda ?? '-'}x
           </td>
           <td>
@@ -1066,16 +1175,11 @@ async function loadResponsesTable() {
           </td>
           <td>
             ${r.responses?.real_option_choice === 'invest_now' 
-              ? '<span style="color: var(--accent-cyan); font-weight: 600;">Open Now</span>' 
-              : '<span style="color: var(--accent-violet); font-weight: 600;">Pay & Wait</span>'}
+              ? '<span style="color: #38bdf8; font-weight: 700;">Open Now</span>' 
+              : '<span style="color: #c084fc; font-weight: 700;">Pay & Wait</span>'}
           </td>
           <td style="font-family: var(--font-mono); font-size: 0.8rem;">
             ${latencySec}s
-          </td>
-          <td>
-            <button class="btn-action-sm" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;" onclick="window.inspectTelemetry('${r.sessionId}')">
-              Inspect
-            </button>
           </td>
         </tr>
       `;
@@ -1093,7 +1197,6 @@ async function loadResponsesTable() {
             <th>Delay Guess ($)</th>
             <th>Bakery Choice</th>
             <th>Time</th>
-            <th>Audit</th>
           </tr>
         </thead>
         <tbody>
@@ -1109,23 +1212,6 @@ async function loadResponsesTable() {
 // Global Actions
 window.advanceStep = handleNextStep;
 window.prevStep = handlePrevStep;
-
-window.switchMode = (mode) => {
-  state.mode = mode;
-  const surveyBtn = document.getElementById('btnModeSurvey');
-  const analyticsBtn = document.getElementById('btnModeAnalytics');
-  if (surveyBtn && analyticsBtn) {
-    if (mode === 'survey') {
-      surveyBtn.classList.add('active');
-      analyticsBtn.classList.remove('active');
-    } else {
-      analyticsBtn.classList.add('active');
-      surveyBtn.classList.remove('active');
-    }
-  }
-  render();
-};
-
 window.hoverStart = (optId) => telemetry.recordHoverStart(optId);
 window.hoverEnd = (optId) => telemetry.recordHoverEnd(optId);
 
@@ -1151,7 +1237,10 @@ window.filterTable = (cohort) => {
 
 window.seedBenchmarkData = async () => {
   try {
-    const res = await fetch('/api/survey/seed-demo', { method: 'POST' });
+    const res = await fetch('/api/survey/seed-demo', {
+      method: 'POST',
+      headers: { 'X-Admin-Pin': state.adminPin }
+    });
     const json = await res.json();
     showToast(json.message);
     render();
@@ -1163,7 +1252,10 @@ window.seedBenchmarkData = async () => {
 window.resetData = async () => {
   if (!confirm('Are you sure you want to clear all responses?')) return;
   try {
-    const res = await fetch('/api/survey/reset', { method: 'POST' });
+    const res = await fetch('/api/survey/reset', {
+      method: 'POST',
+      headers: { 'X-Admin-Pin': state.adminPin }
+    });
     const json = await res.json();
     showToast(json.message);
     render();
@@ -1173,62 +1265,11 @@ window.resetData = async () => {
 };
 
 window.exportCsv = () => {
-  window.location.href = '/api/survey/export.csv';
+  window.location.href = `/api/survey/export.csv?pin=${encodeURIComponent(state.adminPin)}`;
 };
 
 window.exportJson = () => {
-  window.location.href = '/api/survey/export.json';
-};
-
-window.inspectTelemetry = async (sessionId) => {
-  try {
-    const res = await fetch('/api/survey/responses');
-    const data = await res.json();
-    const item = data.responses.find(r => r.sessionId === sessionId);
-    if (!item) return;
-
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.innerHTML = `
-      <div class="modal-content">
-        <div class="modal-header">
-          <div>
-            <h3 style="color: #fff; font-size: 1.15rem;">Decision Audit</h3>
-            <p style="font-size: 0.8rem; color: var(--text-dim); font-family: var(--font-mono);">${sessionId}</p>
-          </div>
-          <button class="btn-close-modal" onclick="this.closest('.modal-overlay').remove()">✕</button>
-        </div>
-
-        <div style="background: rgba(15,23,42,0.8); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.85rem;">
-            <div>Cohort: <strong>${item.cohort}</strong></div>
-            <div>Total Time: <strong>${((item.telemetry?.totalReactionTimeMs || 0) / 1000).toFixed(1)}s</strong></div>
-            <div>Changed Answers: <strong>${item.telemetry?.switchCount || 0} times</strong></div>
-            <div>Left Tab: <strong>${item.telemetry?.tabSwitchCount || 0} times</strong></div>
-            <div>Loss Sensitivity: <strong>${item.metrics?.lambda || '-'}x</strong></div>
-          </div>
-        </div>
-
-        <h4 style="color: #fff; font-size: 0.95rem; margin-bottom: 0.5rem;">Time per Question:</h4>
-        <div style="max-height: 200px; overflow-y: auto; font-family: var(--font-mono); font-size: 0.78rem; background: #000; border: 1px solid var(--border-color); border-radius: 6px; padding: 0.75rem;">
-          ${(item.telemetry?.stepTimes || []).map(st => `
-            <div style="margin-bottom: 0.35rem; color: #cbd5e1;">
-              • [${st.stepId}]: <strong>${(st.reactionTimeMs / 1000).toFixed(2)}s</strong> | switches: ${st.switches || 0}
-            </div>
-          `).join('') || '<div style="color: var(--text-dim);">No step latency details recorded.</div>'}
-        </div>
-
-        <div style="margin-top: 1.5rem; text-align: right;">
-          <button class="btn-primary" style="padding: 0.5rem 1.25rem; font-size: 0.88rem;" onclick="this.closest('.modal-overlay').remove()">
-            Close
-          </button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-  } catch (err) {
-    console.error('Modal error:', err);
-  }
+  window.location.href = `/api/survey/export.json?pin=${encodeURIComponent(state.adminPin)}`;
 };
 
 document.addEventListener('DOMContentLoaded', () => {
