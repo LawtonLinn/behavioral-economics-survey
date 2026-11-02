@@ -257,7 +257,7 @@ window.promptAdminLogin = () => {
 
       <input type="password" 
              id="adminPinInput" 
-             placeholder="Enter PIN (e.g. 2026)" 
+             placeholder="••••" 
              style="width: 100%; text-align: center; font-size: 1.5rem; letter-spacing: 0.25em; padding: 0.85rem; border-radius: 12px; background: rgba(10,14,26,0.95); border: 2px solid rgba(255,255,255,0.2); color: #fff; outline: none; margin-bottom: 1.25rem;" 
              autofocus />
 

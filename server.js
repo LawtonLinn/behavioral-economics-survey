@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3000;
-const ADMIN_PIN = process.env.ADMIN_PIN || '2026'; // Secret PIN for Researcher Dashboard
+const ADMIN_PIN = process.env.ADMIN_PIN || '1661'; // Secret PIN for Researcher Dashboard
 const DATA_DIR = path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'responses.json');
 const PUBLIC_DIR = path.join(__dirname, 'public');
