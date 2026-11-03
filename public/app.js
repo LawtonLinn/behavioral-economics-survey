@@ -573,21 +573,24 @@ function renderSurveyView(container) {
         <div class="input-estimation-box">
           <div class="input-label-row">
             <span style="font-weight: 700; color: #fff;">Based on your gut, what do you think it is really worth?</span>
-            <span style="color: var(--accent-amber); font-family: var(--font-mono); font-size: 0.85rem;">(In Thousands $)</span>
+            <span style="color: var(--accent-amber); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;">(In Thousands $)</span>
           </div>
           <div class="currency-input-wrap">
             <span class="currency-symbol">$</span>
             <input type="number" 
                    id="anchoringInput"
                    class="text-number-input" 
-                   placeholder="e.g. 500 (for $500,000)" 
+                   placeholder="e.g. 500" 
                    min="1" 
                    max="10000" 
                    step="25"
                    value="${state.responses.anchoring_valuation_estimate || ''}"
                    oninput="window.updateAnchoringEstimate(this.value)"
                    onkeydown="if(event.key === 'Enter'){ event.preventDefault(); window.advanceStep(); }" />
-            <span style="position: absolute; right: 1.25rem; color: var(--text-dim); font-family: var(--font-mono);">,000</span>
+            <span class="currency-suffix">,000</span>
+          </div>
+          <div class="input-formatted-preview ${state.responses.anchoring_valuation_estimate ? 'active' : ''}" id="anchoringFormattedPreview">
+            ${state.responses.anchoring_valuation_estimate ? `Interpreted value: $${(state.responses.anchoring_valuation_estimate * 1000).toLocaleString()}` : 'Type 500 for $500,000, 750 for $750,000, etc.'}
           </div>
         </div>
 
@@ -819,20 +822,23 @@ function renderSurveyView(container) {
         <div class="input-estimation-box">
           <div class="input-label-row">
             <span style="font-weight: 700; color: #fff;">Your Gut Guess (Dollars Lost by Waiting):</span>
-            <span style="color: var(--accent-violet); font-family: var(--font-mono); font-size: 0.85rem;">(USD $)</span>
+            <span style="color: var(--accent-violet); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;">(USD $)</span>
           </div>
           <div class="currency-input-wrap">
             <span class="currency-symbol">$</span>
             <input type="number" 
                    id="delayInput"
-                   class="text-number-input" 
-                   placeholder="e.g. 10000" 
+                   class="text-number-input no-suffix" 
+                   placeholder="e.g. 15000" 
                    min="1" 
                    max="500000" 
                    step="500"
                    value="${state.responses.delay_growth_estimate || ''}"
                    oninput="window.updateDelayEstimate(this.value)"
                    onkeydown="if(event.key === 'Enter'){ event.preventDefault(); window.advanceStep(); }" />
+          </div>
+          <div class="input-formatted-preview ${state.responses.delay_growth_estimate ? 'active' : ''}" id="delayFormattedPreview">
+            ${state.responses.delay_growth_estimate ? `Interpreted guess: $${state.responses.delay_growth_estimate.toLocaleString()}` : 'Enter your estimate in standard dollars (e.g. 15000)'}
           </div>
         </div>
 
@@ -906,7 +912,7 @@ function renderSurveyView(container) {
         <div class="input-estimation-box" style="margin-top: 1.5rem;">
           <div class="input-label-row">
             <span style="font-weight: 700; color: #fff;">How much would you be willing to pay for certainty?</span>
-            <span id="optionThresholdDisplay" style="color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 700;">
+            <span id="optionThresholdDisplay" style="color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 800; font-size: 1.25rem;">
               $${state.responses.option_switch_threshold.toLocaleString()}
             </span>
           </div>
@@ -914,12 +920,17 @@ function renderSurveyView(container) {
             What is the maximum holding fee you would pay to wait for 100% certainty instead of risking it today?
           </p>
           <input type="range" 
+                 class="custom-range-slider"
                  min="1000" 
                  max="35000" 
                  step="1000" 
                  value="${state.responses.option_switch_threshold}"
-                 style="width: 100%; accent-color: var(--accent-cyan);"
                  oninput="window.updateOptionThreshold(this.value)" />
+          <div class="slider-scale-row">
+            <span>$1,000 (Low fee)</span>
+            <span>$18,000 (Scenario fee)</span>
+            <span>$35,000 (Max certainty)</span>
+          </div>
         </div>
 
         <div class="survey-footer">
@@ -1355,8 +1366,20 @@ window.updateAnchoringEstimate = (val) => {
   const isValid = !isNaN(num) && num > 0;
   state.responses.anchoring_valuation_estimate = isValid ? num : null;
   telemetry.recordRevision();
+
+  const preview = document.getElementById('anchoringFormattedPreview');
+  if (preview) {
+    if (isValid) {
+      preview.innerText = `Interpreted value: $${(num * 1000).toLocaleString()}`;
+      preview.classList.add('active');
+    } else {
+      preview.innerText = 'Type 500 for $500,000, 750 for $750,000, etc.';
+      preview.classList.remove('active');
+    }
+  }
+
   const btn = document.getElementById('surveyNextBtn');
-  if (btn) btn.disabled = !isValid;
+  if (btn) btn.disabled = false;
 };
 
 window.updateDelayEstimate = (val) => {
@@ -1364,8 +1387,20 @@ window.updateDelayEstimate = (val) => {
   const isValid = !isNaN(num) && num > 0;
   state.responses.delay_growth_estimate = isValid ? num : null;
   telemetry.recordRevision();
+
+  const preview = document.getElementById('delayFormattedPreview');
+  if (preview) {
+    if (isValid) {
+      preview.innerText = `Interpreted guess: $${num.toLocaleString()}`;
+      preview.classList.add('active');
+    } else {
+      preview.innerText = 'Enter your estimate in standard dollars (e.g. 15000)';
+      preview.classList.remove('active');
+    }
+  }
+
   const btn = document.getElementById('surveyNextBtn');
-  if (btn) btn.disabled = !isValid;
+  if (btn) btn.disabled = false;
 };
 
 window.updateOptionThreshold = (val) => {
