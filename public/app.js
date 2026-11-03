@@ -97,31 +97,56 @@ function updateAdminButton() {
   }
 }
 
+function triggerHaptic(duration = 10) {
+  try {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      navigator.vibrate(duration);
+    }
+  } catch (e) {
+    // ignore
+  }
+}
+
 // Global Keyboard Navigation
 window.addEventListener('keydown', (e) => {
   if (state.mode !== 'survey' || state.currentStepIndex === 0 || state.currentStepIndex >= STEPS.length - 1) return;
+  const activeTag = document.activeElement ? document.activeElement.tagName : '';
+  const targetTag = e.target ? e.target.tagName : '';
+  if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || targetTag === 'INPUT' || targetTag === 'TEXTAREA') {
+    return;
+  }
   if (e.key === '1') handleKeySelection(1);
   if (e.key === '2') handleKeySelection(2);
 });
 
 function handleKeySelection(num) {
   const stepId = STEPS[state.currentStepIndex].id;
-  if (stepId === 'framing_jobs') selectJobChoice(num === 1 ? 'A' : 'B');
-  if (stepId === 'framing_discount') selectDiscountChoice(num === 1 ? 'cash' : 'credit');
-  if (stepId === 'loss_sunk') selectSunkChoice(num === 1 ? 'sell_and_reallocate' : 'hold_for_breakeven');
-  if (stepId === 'real_options') selectRealOptionChoice(num === 1 ? 'invest_now' : 'wait_for_information');
+  if (stepId === 'framing_jobs') window.selectJobChoice(num === 1 ? 'A' : 'B');
+  if (stepId === 'framing_discount') window.selectDiscountChoice(num === 1 ? 'cash' : 'credit');
+  if (stepId === 'loss_sunk') window.selectSunkChoice(num === 1 ? 'sell_and_reallocate' : 'hold_for_breakeven');
+  if (stepId === 'real_options') window.selectRealOptionChoice(num === 1 ? 'invest_now' : 'wait_for_information');
 }
 
+let isNavigating = false;
+
 function handleNextStep() {
+  if (isNavigating) return;
   const currentStep = STEPS[state.currentStepIndex];
   
   if (currentStep.id === 'framing_jobs' && !state.responses.framing_job_choice) {
     showToast('Please pick Plan A or Plan B to continue.');
     return;
   }
-  if (currentStep.id === 'anchoring_quote' && (!state.responses.anchoring_valuation_estimate || state.responses.anchoring_valuation_estimate <= 0)) {
-    showToast('Please type your guess for what the house is worth.');
-    return;
+  if (currentStep.id === 'anchoring_quote') {
+    const input = document.getElementById('anchoringInput');
+    const inputVal = input ? parseFloat(input.value) : NaN;
+    const est = !isNaN(inputVal) && inputVal > 0 ? inputVal : state.responses.anchoring_valuation_estimate;
+    if (!est || est <= 0) {
+      showToast('Please type your guess for what the house is worth.');
+      if (input) input.focus();
+      return;
+    }
+    state.responses.anchoring_valuation_estimate = est;
   }
   if (currentStep.id === 'framing_discount' && !state.responses.framing_discount_choice) {
     showToast('Please select Cash or Card.');
@@ -138,9 +163,16 @@ function handleNextStep() {
     showToast('Please pick what you would do with the item.');
     return;
   }
-  if (currentStep.id === 'rule72_delay' && (!state.responses.delay_growth_estimate || state.responses.delay_growth_estimate <= 0)) {
-    showToast('Please enter your gut guess in dollars.');
-    return;
+  if (currentStep.id === 'rule72_delay') {
+    const input = document.getElementById('delayInput');
+    const inputVal = input ? parseFloat(input.value) : NaN;
+    const est = !isNaN(inputVal) && inputVal > 0 ? inputVal : state.responses.delay_growth_estimate;
+    if (!est || est <= 0) {
+      showToast('Please enter your gut guess in dollars.');
+      if (input) input.focus();
+      return;
+    }
+    state.responses.delay_growth_estimate = est;
   }
   if (currentStep.id === 'real_options' && !state.responses.real_option_choice) {
     showToast('Please pick Choice 1 or Choice 2.');
@@ -148,23 +180,55 @@ function handleNextStep() {
   }
 
   telemetry.finishStep(currentStep.id);
+  triggerHaptic(12);
 
   if (currentStep.id === 'real_options') {
     submitSurvey();
     return;
   }
 
-  state.currentStepIndex++;
-  telemetry.startStep(STEPS[state.currentStepIndex].id);
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  isNavigating = true;
+  const card = document.querySelector('.survey-card');
+  if (card) {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(-4px)';
+    setTimeout(() => {
+      state.currentStepIndex++;
+      telemetry.startStep(STEPS[state.currentStepIndex].id);
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      isNavigating = false;
+    }, 150);
+  } else {
+    state.currentStepIndex++;
+    telemetry.startStep(STEPS[state.currentStepIndex].id);
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    isNavigating = false;
+  }
 }
 
 function handlePrevStep() {
-  if (state.currentStepIndex > 1) {
+  if (isNavigating || state.currentStepIndex <= 1) return;
+  triggerHaptic(8);
+  isNavigating = true;
+  const card = document.querySelector('.survey-card');
+  if (card) {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(4px)';
+    setTimeout(() => {
+      state.currentStepIndex--;
+      telemetry.startStep(STEPS[state.currentStepIndex].id);
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      isNavigating = false;
+    }, 150);
+  } else {
     state.currentStepIndex--;
     telemetry.startStep(STEPS[state.currentStepIndex].id);
     render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    isNavigating = false;
   }
 }
 
@@ -198,38 +262,77 @@ async function submitSurvey() {
 
 // User Actions
 window.selectJobChoice = (choice) => {
+  triggerHaptic(10);
   telemetry.recordOptionSelection(choice);
   state.responses.framing_job_choice = choice;
-  render();
+  const cards = document.querySelectorAll('.choice-card[data-job-choice]');
+  cards.forEach(card => {
+    card.classList.toggle('selected', card.getAttribute('data-job-choice') === choice);
+  });
+  const btn = document.getElementById('surveyNextBtn');
+  if (btn) btn.disabled = false;
 };
 
 window.selectDiscountChoice = (choice) => {
+  triggerHaptic(10);
   telemetry.recordOptionSelection(choice);
   state.responses.framing_discount_choice = choice;
-  render();
+  const cards = document.querySelectorAll('.choice-card[data-discount-choice]');
+  cards.forEach(card => {
+    card.classList.toggle('selected', card.getAttribute('data-discount-choice') === choice);
+  });
+  const btn = document.getElementById('surveyNextBtn');
+  if (btn) btn.disabled = false;
 };
 
 window.toggleGambleChoice = (index, accept) => {
+  triggerHaptic(10);
   telemetry.recordOptionSelection(`gamble_${index}_${accept}`);
   state.responses.loss_aversion_gambles[index] = accept;
-  render();
+  const row = document.querySelector(`.lottery-row[data-gamble-index="${index}"]`);
+  if (row) {
+    const acceptBtn = row.querySelector('.btn-gamble.accept');
+    const rejectBtn = row.querySelector('.btn-gamble.reject');
+    if (acceptBtn) acceptBtn.classList.toggle('selected', accept === true);
+    if (rejectBtn) rejectBtn.classList.toggle('selected', accept === false);
+  }
+  const allAnswered = !state.responses.loss_aversion_gambles.some(v => v === null);
+  const btn = document.getElementById('surveyNextBtn');
+  if (btn && allAnswered) btn.disabled = false;
 };
 
 window.selectSunkChoice = (choice) => {
+  triggerHaptic(10);
   telemetry.recordOptionSelection(choice);
   state.responses.loss_aversion_sunk_choice = choice;
-  render();
+  const cards = document.querySelectorAll('.choice-card[data-sunk-choice]');
+  cards.forEach(card => {
+    card.classList.toggle('selected', card.getAttribute('data-sunk-choice') === choice);
+  });
+  const btn = document.getElementById('surveyNextBtn');
+  if (btn) btn.disabled = false;
 };
 
 window.selectRealOptionChoice = (choice) => {
+  triggerHaptic(10);
   telemetry.recordOptionSelection(choice);
   state.responses.real_option_choice = choice;
-  render();
+  const cards = document.querySelectorAll('.choice-card[data-real-option-choice]');
+  cards.forEach(card => {
+    card.classList.toggle('selected', card.getAttribute('data-real-option-choice') === choice);
+  });
+  const btn = document.getElementById('surveyNextBtn');
+  if (btn) btn.disabled = false;
 };
 
 window.setConfidenceRating = (rating) => {
+  triggerHaptic(8);
   state.responses.confidence_rating = rating;
-  render();
+  const stars = document.querySelectorAll('.star-btn[data-star-rating]');
+  stars.forEach(btn => {
+    const starVal = Number(btn.getAttribute('data-star-rating'));
+    btn.classList.toggle('active', starVal <= rating);
+  });
 };
 
 // Admin Password Gate
@@ -404,6 +507,7 @@ function renderSurveyView(container) {
 
         <div class="choice-grid two-col">
           <div class="choice-card ${state.responses.framing_job_choice === 'A' ? 'selected' : ''}" 
+               data-job-choice="A"
                onclick="window.selectJobChoice('A')"
                onmouseenter="window.hoverStart('plan_A')"
                onmouseleave="window.hoverEnd('plan_A')">
@@ -418,6 +522,7 @@ function renderSurveyView(container) {
           </div>
 
           <div class="choice-card ${state.responses.framing_job_choice === 'B' ? 'selected' : ''}" 
+               data-job-choice="B"
                onclick="window.selectJobChoice('B')"
                onmouseenter="window.hoverStart('plan_B')"
                onmouseleave="window.hoverEnd('plan_B')">
@@ -436,7 +541,7 @@ function renderSurveyView(container) {
 
         <div class="survey-footer">
           <button class="btn-secondary" onclick="window.prevStep()">← Previous</button>
-          <button class="btn-primary" onclick="window.advanceStep()" ${!state.responses.framing_job_choice ? 'disabled' : ''}>
+          <button class="btn-primary" id="surveyNextBtn" onclick="window.advanceStep()" ${!state.responses.framing_job_choice ? 'disabled' : ''}>
             Next Question →
           </button>
         </div>
@@ -473,20 +578,22 @@ function renderSurveyView(container) {
           <div class="currency-input-wrap">
             <span class="currency-symbol">$</span>
             <input type="number" 
+                   id="anchoringInput"
                    class="text-number-input" 
                    placeholder="e.g. 500 (for $500,000)" 
-                   min="50" 
-                   max="2000" 
+                   min="1" 
+                   max="10000" 
                    step="25"
                    value="${state.responses.anchoring_valuation_estimate || ''}"
-                   oninput="window.updateAnchoringEstimate(this.value)" />
+                   oninput="window.updateAnchoringEstimate(this.value)"
+                   onkeydown="if(event.key === 'Enter'){ event.preventDefault(); window.advanceStep(); }" />
             <span style="position: absolute; right: 1.25rem; color: var(--text-dim); font-family: var(--font-mono);">,000</span>
           </div>
         </div>
 
         <div class="survey-footer">
           <button class="btn-secondary" onclick="window.prevStep()">← Previous</button>
-          <button class="btn-primary" onclick="window.advanceStep()" ${!state.responses.anchoring_valuation_estimate ? 'disabled' : ''}>
+          <button class="btn-primary" id="surveyNextBtn" onclick="window.advanceStep()">
             Next Question →
           </button>
         </div>
@@ -517,6 +624,7 @@ function renderSurveyView(container) {
 
         <div class="choice-grid two-col">
           <div class="choice-card ${state.responses.framing_discount_choice === 'cash' ? 'selected' : ''}" 
+               data-discount-choice="cash"
                onclick="window.selectDiscountChoice('cash')"
                onmouseenter="window.hoverStart('pay_cash')"
                onmouseleave="window.hoverEnd('pay_cash')">
@@ -531,6 +639,7 @@ function renderSurveyView(container) {
           </div>
 
           <div class="choice-card ${state.responses.framing_discount_choice === 'credit' ? 'selected' : ''}" 
+               data-discount-choice="credit"
                onclick="window.selectDiscountChoice('credit')"
                onmouseenter="window.hoverStart('pay_credit')"
                onmouseleave="window.hoverEnd('pay_credit')">
@@ -547,7 +656,7 @@ function renderSurveyView(container) {
 
         <div class="survey-footer">
           <button class="btn-secondary" onclick="window.prevStep()">← Previous</button>
-          <button class="btn-primary" onclick="window.advanceStep()" ${!state.responses.framing_discount_choice ? 'disabled' : ''}>
+          <button class="btn-primary" id="surveyNextBtn" onclick="window.advanceStep()" ${!state.responses.framing_discount_choice ? 'disabled' : ''}>
             Next Question →
           </button>
         </div>
@@ -569,7 +678,7 @@ function renderSurveyView(container) {
     lotteries.forEach((lot, i) => {
       const choice = state.responses.loss_aversion_gambles[i];
       rowsHtml += `
-        <div class="lottery-row">
+        <div class="lottery-row" data-gamble-index="${i}">
           <div class="gamble-desc">
             Coin #${i + 1}: Heads <span class="win-text">WIN $100</span> | Tails <span class="loss-text">LOSE $${lot.loss}</span>
           </div>
@@ -577,11 +686,13 @@ function renderSurveyView(container) {
             ${lot.ev}
           </div>
           <div class="gamble-actions">
-            <button class="btn-gamble accept ${choice === true ? 'selected' : ''}" 
+            <button type="button" 
+                    class="btn-gamble accept ${choice === true ? 'selected' : ''}" 
                     onclick="window.toggleGambleChoice(${i}, true)">
               I'd Flip!
             </button>
-            <button class="btn-gamble reject ${choice === false ? 'selected' : ''}" 
+            <button type="button" 
+                    class="btn-gamble reject ${choice === false ? 'selected' : ''}" 
                     onclick="window.toggleGambleChoice(${i}, false)">
               Pass (No)
             </button>
@@ -589,6 +700,8 @@ function renderSurveyView(container) {
         </div>
       `;
     });
+
+    const isAllLotteriesAnswered = !state.responses.loss_aversion_gambles.some(v => v === null);
 
     stepHtml = `
       <div class="survey-card">
@@ -612,7 +725,7 @@ function renderSurveyView(container) {
 
         <div class="survey-footer">
           <button class="btn-secondary" onclick="window.prevStep()">← Previous</button>
-          <button class="btn-primary" onclick="window.advanceStep()">
+          <button class="btn-primary" id="surveyNextBtn" onclick="window.advanceStep()" ${!isAllLotteriesAnswered ? 'disabled' : ''}>
             Next Question →
           </button>
         </div>
@@ -639,6 +752,7 @@ function renderSurveyView(container) {
 
         <div class="choice-grid two-col">
           <div class="choice-card ${state.responses.loss_aversion_sunk_choice === 'sell_and_reallocate' ? 'selected' : ''}" 
+               data-sunk-choice="sell_and_reallocate"
                onclick="window.selectSunkChoice('sell_and_reallocate')"
                onmouseenter="window.hoverStart('sell_reallocate')"
                onmouseleave="window.hoverEnd('sell_reallocate')">
@@ -653,6 +767,7 @@ function renderSurveyView(container) {
           </div>
 
           <div class="choice-card ${state.responses.loss_aversion_sunk_choice === 'hold_for_breakeven' ? 'selected' : ''}" 
+               data-sunk-choice="hold_for_breakeven"
                onclick="window.selectSunkChoice('hold_for_breakeven')"
                onmouseenter="window.hoverStart('hold_breakeven')"
                onmouseleave="window.hoverEnd('hold_breakeven')">
@@ -669,7 +784,7 @@ function renderSurveyView(container) {
 
         <div class="survey-footer">
           <button class="btn-secondary" onclick="window.prevStep()">← Previous</button>
-          <button class="btn-primary" onclick="window.advanceStep()" ${!state.responses.loss_aversion_sunk_choice ? 'disabled' : ''}>
+          <button class="btn-primary" id="surveyNextBtn" onclick="window.advanceStep()" ${!state.responses.loss_aversion_sunk_choice ? 'disabled' : ''}>
             Next Question →
           </button>
         </div>
@@ -709,19 +824,21 @@ function renderSurveyView(container) {
           <div class="currency-input-wrap">
             <span class="currency-symbol">$</span>
             <input type="number" 
+                   id="delayInput"
                    class="text-number-input" 
                    placeholder="e.g. 10000" 
                    min="1" 
-                   max="150000" 
+                   max="500000" 
                    step="500"
                    value="${state.responses.delay_growth_estimate || ''}"
-                   oninput="window.updateDelayEstimate(this.value)" />
+                   oninput="window.updateDelayEstimate(this.value)"
+                   onkeydown="if(event.key === 'Enter'){ event.preventDefault(); window.advanceStep(); }" />
           </div>
         </div>
 
         <div class="survey-footer">
           <button class="btn-secondary" onclick="window.prevStep()">← Previous</button>
-          <button class="btn-primary" onclick="window.advanceStep()" ${!state.responses.delay_growth_estimate ? 'disabled' : ''}>
+          <button class="btn-primary" id="surveyNextBtn" onclick="window.advanceStep()">
             Final Question! →
           </button>
         </div>
@@ -756,6 +873,7 @@ function renderSurveyView(container) {
 
         <div class="choice-grid two-col">
           <div class="choice-card ${state.responses.real_option_choice === 'invest_now' ? 'selected' : ''}" 
+               data-real-option-choice="invest_now"
                onclick="window.selectRealOptionChoice('invest_now')"
                onmouseenter="window.hoverStart('opt_invest_now')"
                onmouseleave="window.hoverEnd('opt_invest_now')">
@@ -770,6 +888,7 @@ function renderSurveyView(container) {
           </div>
 
           <div class="choice-card ${state.responses.real_option_choice === 'wait_for_information' ? 'selected' : ''}" 
+               data-real-option-choice="wait_for_information"
                onclick="window.selectRealOptionChoice('wait_for_information')"
                onmouseenter="window.hoverStart('opt_wait')"
                onmouseleave="window.hoverEnd('opt_wait')">
@@ -787,7 +906,7 @@ function renderSurveyView(container) {
         <div class="input-estimation-box" style="margin-top: 1.5rem;">
           <div class="input-label-row">
             <span style="font-weight: 700; color: #fff;">How much would you be willing to pay for certainty?</span>
-            <span style="color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 700;">
+            <span id="optionThresholdDisplay" style="color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 700;">
               $${state.responses.option_switch_threshold.toLocaleString()}
             </span>
           </div>
@@ -805,7 +924,7 @@ function renderSurveyView(container) {
 
         <div class="survey-footer">
           <button class="btn-secondary" onclick="window.prevStep()">← Previous</button>
-          <button class="btn-primary" onclick="window.advanceStep()" ${!state.responses.real_option_choice ? 'disabled' : ''}>
+          <button class="btn-primary" id="surveyNextBtn" onclick="window.advanceStep()" ${!state.responses.real_option_choice ? 'disabled' : ''}>
             Finish & See My Results →
           </button>
         </div>
@@ -917,6 +1036,19 @@ function renderSurveyView(container) {
   } else {
     container.innerHTML = `<div class="survey-wrapper">${stepHtml}</div>`;
   }
+
+  // Smooth autofocus on number inputs if present
+  if (step.id === 'anchoring_quote') {
+    setTimeout(() => {
+      const input = document.getElementById('anchoringInput');
+      if (input) input.focus();
+    }, 60);
+  } else if (step.id === 'rule72_delay') {
+    setTimeout(() => {
+      const input = document.getElementById('delayInput');
+      if (input) input.focus();
+    }, 60);
+  }
 }
 
 function renderConfidencePicker() {
@@ -924,7 +1056,10 @@ function renderConfidencePicker() {
   let starsHtml = '';
   for (let i = 1; i <= 5; i++) {
     starsHtml += `
-      <button class="star-btn ${i <= current ? 'active' : ''}" onclick="window.setConfidenceRating(${i})">
+      <button type="button" 
+              class="star-btn ${i <= current ? 'active' : ''}" 
+              data-star-rating="${i}"
+              onclick="window.setConfidenceRating(${i})">
         ★
       </button>
     `;
@@ -1216,18 +1351,30 @@ window.hoverStart = (optId) => telemetry.recordHoverStart(optId);
 window.hoverEnd = (optId) => telemetry.recordHoverEnd(optId);
 
 window.updateAnchoringEstimate = (val) => {
-  state.responses.anchoring_valuation_estimate = Number(val);
+  const num = parseFloat(val);
+  const isValid = !isNaN(num) && num > 0;
+  state.responses.anchoring_valuation_estimate = isValid ? num : null;
   telemetry.recordRevision();
+  const btn = document.getElementById('surveyNextBtn');
+  if (btn) btn.disabled = !isValid;
 };
 
 window.updateDelayEstimate = (val) => {
-  state.responses.delay_growth_estimate = Number(val);
+  const num = parseFloat(val);
+  const isValid = !isNaN(num) && num > 0;
+  state.responses.delay_growth_estimate = isValid ? num : null;
   telemetry.recordRevision();
+  const btn = document.getElementById('surveyNextBtn');
+  if (btn) btn.disabled = !isValid;
 };
 
 window.updateOptionThreshold = (val) => {
-  state.responses.option_switch_threshold = Number(val);
-  render();
+  const num = Number(val);
+  state.responses.option_switch_threshold = num;
+  const display = document.getElementById('optionThresholdDisplay');
+  if (display) {
+    display.innerText = `$${num.toLocaleString()}`;
+  }
 };
 
 window.filterTable = (cohort) => {
