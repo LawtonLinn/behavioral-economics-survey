@@ -1659,6 +1659,229 @@ window.setMarketChartView = (view) => {
   renderMarketPredictorView(document.getElementById('mainApp'));
 };
 
+window.openAssetModal = (assetId) => {
+  const result = state.market.lastResult;
+  if (!result) return;
+  const asset = result.assets.find(a => a.assetId === assetId);
+  if (!asset) return;
+
+  const modal = document.createElement('div');
+  modal.className = 'chart-modal-overlay';
+  modal.id = 'assetChartModal';
+  modal.onclick = (e) => {
+    if (e.target === modal) window.closeAssetModal();
+  };
+
+  const isUp = asset.expectedShiftPct > 0;
+  const isNeutral = Math.abs(asset.expectedShiftPct) <= 0.3;
+  const accentColor = isNeutral ? '#94a3b8' : (isUp ? '#10b981' : '#f43f5e');
+
+  // Large Modal SVG Dimensions
+  const svgW = 900;
+  const svgH = 420;
+  const padLeft = 68;
+  const padRight = 24;
+  const padTop = 30;
+  const padBottom = 42;
+  const plotW = svgW - padLeft - padRight;
+  const plotH = svgH - padTop - padBottom;
+
+  const candles = asset.candles || [];
+  const trajectory = asset.trajectory || [];
+
+  let allMin = Infinity;
+  let allMax = -Infinity;
+
+  candles.forEach(c => {
+    if (c.low < allMin) allMin = c.low;
+    if (c.high > allMax) allMax = c.high;
+  });
+
+  trajectory.forEach(t => {
+    if (t.bear < allMin) allMin = t.bear;
+    if (t.bull > allMax) allMax = t.bull;
+  });
+
+  if (!isFinite(allMin) || !isFinite(allMax) || allMax === allMin) {
+    allMin = (asset.currentPrice || 100) * 0.95;
+    allMax = (asset.currentPrice || 100) * 1.05;
+  }
+
+  const priceMargin = (allMax - allMin) * 0.08 || 1;
+  const yMin = allMin - priceMargin;
+  const yMax = allMax + priceMargin;
+  const yRange = yMax - yMin;
+
+  const getY = (val) => padTop + plotH - ((val - yMin) / yRange) * plotH;
+  const getX = (dayIdx, totalDays) => padLeft + (dayIdx / totalDays) * plotW;
+
+  // 6 Horizontal Grid levels for large modal
+  const yTicks = [
+    yMin + yRange * 0.05,
+    yMin + yRange * 0.22,
+    yMin + yRange * 0.40,
+    yMin + yRange * 0.58,
+    yMin + yRange * 0.76,
+    yMin + yRange * 0.94
+  ];
+
+  const basePriceY = getY(asset.currentPrice || 100);
+  const totalDays = result.horizonDays;
+
+  // 7 X-Axis Day markers
+  const xTicks = [];
+  const step = Math.max(1, Math.floor(totalDays / 6));
+  for (let d = 1; d <= totalDays; d += step) {
+    xTicks.push({ day: d, label: `Day ${d} (T+${d})` });
+  }
+  if (!xTicks.some(t => t.day === totalDays)) {
+    xTicks.push({ day: totalDays, label: `Day ${totalDays} (T+${totalDays})` });
+  }
+
+  // Large Candlestick elements
+  const candleWidth = Math.max(8, Math.min(24, (plotW / candles.length) * 0.65));
+  const candleSvgElements = candles.map((c, i) => {
+    const cx = getX(i + 0.5, candles.length);
+    const wickTop = getY(c.high);
+    const wickBottom = getY(c.low);
+    const bodyTop = getY(Math.max(c.open, c.close));
+    const bodyBottom = getY(Math.min(c.open, c.close));
+    const bodyHeight = Math.max(2, bodyBottom - bodyTop);
+    const colorClass = c.isGreen ? 'green' : 'red';
+
+    return `
+      <g class="candle-group">
+        <line class="wick ${colorClass}" x1="${cx.toFixed(1)}" y1="${wickTop.toFixed(1)}" x2="${cx.toFixed(1)}" y2="${wickBottom.toFixed(1)}" />
+        <rect class="candle-body ${colorClass}" x="${(cx - candleWidth / 2).toFixed(1)}" y="${bodyTop.toFixed(1)}" width="${candleWidth.toFixed(1)}" height="${bodyHeight.toFixed(1)}" rx="2" />
+      </g>
+    `;
+  }).join('');
+
+  // Confidence Corridor for modal
+  const bullPoints = trajectory.map((t, idx) => `${getX(idx, totalDays).toFixed(1)},${getY(t.bull).toFixed(1)}`).join(' ');
+  const bearPointsRev = [...trajectory].reverse().map((t, idx) => {
+    const origIdx = totalDays - idx;
+    return `${getX(origIdx, totalDays).toFixed(1)},${getY(t.bear).toFixed(1)}`;
+  }).join(' ');
+  const bandPolygon = `${bullPoints} ${bearPointsRev}`;
+  const medianPath = trajectory.map((t, idx) => `${getX(idx, totalDays).toFixed(1)},${getY(t.base).toFixed(1)}`).join(' ');
+
+  const lastCandle = candles[candles.length - 1] || { open: asset.currentPrice, close: asset.projectedPrice, high: asset.projectedPrice, low: asset.currentPrice };
+
+  modal.innerHTML = `
+    <div class="chart-modal-dialog">
+      <!-- Modal Header -->
+      <div class="chart-modal-header">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
+            <span style="font-size: 1.8rem;">${asset.icon}</span>
+            <h2 style="color: #fff; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.02em;">
+              ${asset.assetId} — ${asset.name}
+            </h2>
+            <span class="badge-tag cyan">${asset.category}</span>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            High-Resolution Price Discovery & Intraday Shock Modeling (${totalDays}-Day Horizon)
+          </p>
+        </div>
+        <button class="chart-modal-close-btn" onclick="window.closeAssetModal()" aria-label="Close modal">✕</button>
+      </div>
+
+      <!-- Key Macro Indicators Bar -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem;">
+        <div class="stat-card" style="padding: 0.75rem 1rem;">
+          <span class="stat-label">Initial Baseline</span>
+          <span class="stat-value" style="font-size: 1.2rem; color: #fff;">$${Number(asset.currentPrice).toFixed(2)}</span>
+        </div>
+        <div class="stat-card" style="padding: 0.75rem 1rem;">
+          <span class="stat-label">Projected T+${totalDays} Price</span>
+          <span class="stat-value" style="font-size: 1.2rem; color: ${accentColor};">$${Number(asset.projectedPrice).toFixed(2)}</span>
+        </div>
+        <div class="stat-card" style="padding: 0.75rem 1rem;">
+          <span class="stat-label">Expected Net Shift</span>
+          <span class="stat-value" style="font-size: 1.2rem; color: ${accentColor};">${isUp ? '+' : ''}${asset.expectedShiftPct}%</span>
+        </div>
+        <div class="stat-card" style="padding: 0.75rem 1rem;">
+          <span class="stat-label">95% Confidence Band</span>
+          <span class="stat-value" style="font-size: 1rem; color: #cbd5e1;">${asset.confidenceLower}% to ${asset.confidenceUpper}%</span>
+        </div>
+        <div class="stat-card" style="padding: 0.75rem 1rem;">
+          <span class="stat-label">Algorithmic Stance</span>
+          <span class="stat-value" style="font-size: 1rem; color: ${accentColor}; font-weight: 800;">${asset.stance}</span>
+        </div>
+      </div>
+
+      <!-- Large Scale Candlestick Chart -->
+      <div class="modal-candlestick-wrapper">
+        <div class="candle-hover-overlay" style="font-size: 0.85rem; padding: 0.4rem 0.75rem 0.6rem;">
+          <span>Day ${totalDays} Final Candle:</span>
+          <span>Open: <b>$${Number(lastCandle.open).toFixed(2)}</b></span>
+          <span>High: <b style="color: #34d399;">$${Number(lastCandle.high).toFixed(2)}</b></span>
+          <span>Low: <b style="color: #fb7185;">$${Number(lastCandle.low).toFixed(2)}</b></span>
+          <span>Close: <b style="color: ${lastCandle.close >= lastCandle.open ? '#34d399' : '#fb7185'};">$${Number(lastCandle.close).toFixed(2)}</b></span>
+        </div>
+
+        <svg class="modal-candlestick-svg" viewBox="0 0 ${svgW} ${svgH}">
+          <!-- Horizontal Grid Lines & Y-Price Labels -->
+          ${yTicks.map(tVal => {
+            const yPos = getY(tVal);
+            return `
+              <line class="grid-line" x1="${padLeft}" y1="${yPos.toFixed(1)}" x2="${svgW - padRight}" y2="${yPos.toFixed(1)}" />
+              <text x="${padLeft - 10}" y="${(yPos + 4).toFixed(1)}" text-anchor="end" font-weight="600">$${tVal < 100 ? tVal.toFixed(2) : Math.round(tVal)}</text>
+            `;
+          }).join('')}
+
+          <!-- T=0 Baseline Reference -->
+          <line class="baseline-ref" x1="${padLeft}" y1="${basePriceY.toFixed(1)}" x2="${svgW - padRight}" y2="${basePriceY.toFixed(1)}" />
+          <text x="${svgW - padRight - 6}" y="${(basePriceY - 6).toFixed(1)}" text-anchor="end" fill="#38bdf8" font-size="9px" font-weight="700">T=0 Baseline ($${Number(asset.currentPrice).toFixed(2)})</text>
+
+          <!-- Vertical Day Grid Lines -->
+          ${xTicks.map(xTick => {
+            const xPos = getX(xTick.day, totalDays);
+            return `
+              <line class="grid-line" x1="${xPos.toFixed(1)}" y1="${padTop}" x2="${xPos.toFixed(1)}" y2="${padTop + plotH}" />
+              <text x="${xPos.toFixed(1)}" y="${svgH - 12}" text-anchor="middle" font-weight="600">${xTick.label}</text>
+            `;
+          }).join('')}
+
+          <!-- Axes Borders -->
+          <line class="axis-line" x1="${padLeft}" y1="${padTop}" x2="${padLeft}" y2="${padTop + plotH}" />
+          <line class="axis-line" x1="${padLeft}" y1="${padTop + plotH}" x2="${svgW - padRight}" y2="${padTop + plotH}" />
+
+          <!-- Background 90% Confidence Corridor -->
+          <polygon points="${bandPolygon}" fill="${isUp ? 'rgba(16,185,129,0.08)' : 'rgba(244,63,94,0.08)'}" stroke="none" />
+          <polyline points="${bullPoints}" fill="none" stroke="${isUp ? '#34d399' : '#fb7185'}" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.45" />
+          <polyline points="${medianPath}" fill="none" stroke="${accentColor}" stroke-width="1.5" stroke-dasharray="2 3" opacity="0.6" />
+
+          <!-- Real-World Candlesticks -->
+          ${candleSvgElements}
+        </svg>
+      </div>
+
+      <!-- Policy Transmission Context Notes -->
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1rem 1.25rem; font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
+        <b style="color: #fff;">Policy Transmission Dynamics:</b>
+        The candlestick path reflects initial shock absorption on days 1–3 followed by systemic drift according to the policy domain beta sensitivity (${result.analysis.domainLabel}). Intraday volatility captures market liquidity digestion and regulatory certainty revisions.
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Esc key listener to close modal
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      window.closeAssetModal();
+      document.removeEventListener('keydown', handleKeyDown);
+    }
+  };
+  document.addEventListener('keydown', handleKeyDown);
+};
+
+window.closeAssetModal = () => {
+  document.getElementById('assetChartModal')?.remove();
+};
+
 window.selectMarketPreset = (presetId) => {
   const found = PRESET_NEWS.find(p => p.id === presetId);
   if (!found) return;
@@ -2152,7 +2375,9 @@ function renderMarketPredictorView(container) {
               const lastCandle = candles[candles.length - 1] || { open: asset.currentPrice, close: asset.projectedPrice, high: asset.projectedPrice, low: asset.currentPrice };
 
               return `
-                <div class="asset-card">
+                <div class="asset-card" onclick="window.openAssetModal('${asset.assetId}')" title="Click to enlarge full-screen chart">
+                  <span class="expand-hint-badge">🔍 Click to Enlarge</span>
+
                   <!-- Header: Asset identity, price shift, stance -->
                   <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div>
@@ -2216,7 +2441,7 @@ function renderMarketPredictorView(container) {
                   <!-- Footer: Confidence Range & Strategy Stance -->
                   <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.6rem;">
                     <span>95% Shock Band: <b style="color: #cbd5e1;">${asset.confidenceLower}% to ${asset.confidenceUpper}%</b></span>
-                    <span style="color: ${accentColor}; font-weight: 800;">${asset.stance}</span>
+                    <span style="color: ${accentColor}; font-weight: 800;">${asset.stance} ↗</span>
                   </div>
                 </div>
               `;

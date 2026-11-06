@@ -497,12 +497,152 @@ header.app-header {
   flex-direction: column;
   gap: 0.75rem;
   transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
 }
 
 .asset-card:hover {
-  border-color: rgba(56, 189, 248, 0.4);
+  border-color: rgba(56, 189, 248, 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.asset-card .expand-hint-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.asset-card:hover .expand-hint-badge {
+  opacity: 1;
+}
+
+/* Modal for Enlarged Chart */
+.chart-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 8, 18, 0.88);
+  backdrop-filter: blur(12px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+.chart-modal-dialog {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98) 0%, rgba(9, 13, 25, 0.99) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.15);
+  width: 100%;
+  max-width: 960px;
+  max-height: 92vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem;
+  gap: 1.25rem;
+}
+
+.chart-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chart-modal-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chart-modal-close-btn:hover {
+  background: rgba(244, 63, 94, 0.25);
+  border-color: rgba(244, 63, 94, 0.5);
+  color: #fb7185;
+}
+
+.modal-candlestick-wrapper {
+  background: radial-gradient(circle at 50% 10%, rgba(20, 30, 55, 0.9) 0%, rgba(8, 12, 22, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 1.25rem 1rem 1rem;
+  position: relative;
+}
+
+.modal-candlestick-svg {
+  width: 100%;
+  height: 420px;
+  display: block;
+}
+
+.modal-candlestick-svg text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: #94a3b8;
+  user-select: none;
+}
+
+.modal-candlestick-svg .grid-line {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-dasharray: 3 4;
+}
+
+.modal-candlestick-svg .baseline-ref {
+  stroke: rgba(56, 189, 248, 0.5);
+  stroke-dasharray: 5 5;
+}
+
+.modal-candlestick-svg .axis-line {
+  stroke: rgba(255, 255, 255, 0.25);
+}
+
+.modal-candlestick-svg .wick {
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.modal-candlestick-svg .wick.green {
+  stroke: #10b981;
+}
+
+.modal-candlestick-svg .wick.red {
+  stroke: #f43f5e;
+}
+
+.modal-candlestick-svg .candle-body.green {
+  fill: #10b981;
+  stroke: #059669;
+  stroke-width: 1;
+}
+
+.modal-candlestick-svg .candle-body.red {
+  fill: #f43f5e;
+  stroke: #e11d48;
+  stroke-width: 1;
 }
 
 .stat-metric-pill {
