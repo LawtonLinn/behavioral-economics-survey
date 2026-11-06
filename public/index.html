@@ -15,28 +15,86 @@
   <!-- Top Navigation Bar -->
   <header class="app-header">
     <div class="header-container">
-      <div class="brand" onclick="window.switchMode('survey')">
-        <span class="brand-badge">VERITAS</span>
-        <div class="brand-title">Decision<span>Game</span></div>
+      <div class="header-left">
+        <!-- Left Menu Bar Toggle Button -->
+        <button class="menu-toggle-btn" id="menuToggleBtn" onclick="window.toggleLeftMenu()" aria-label="Open Navigation Menu">
+          <span class="menu-icon">☰</span>
+          <span class="menu-text">Menu</span>
+        </button>
+
+        <div class="brand" onclick="window.navigateToSection('survey')">
+          <span class="brand-badge">VERITAS</span>
+          <div class="brand-title">Decision<span>Game</span></div>
+        </div>
       </div>
 
-      <!-- Navigation Tabs & Protected Access -->
-      <div class="nav-actions">
-        <button class="nav-tab-btn" id="navSurveyBtn" onclick="window.switchMode('survey')">
-          <span>🧠</span>
-          <span>Study</span>
-        </button>
-        <button class="nav-tab-btn" id="navMarketBtn" onclick="window.switchMode('market')">
-          <span>⚡</span>
-          <span>Market Predictor</span>
-        </button>
-        <button class="admin-lock-btn" id="adminLockBtn" onclick="window.promptAdminLogin()">
-          <span id="adminLockIcon">🔒</span>
-          <span id="adminLockText">Researcher</span>
-        </button>
+      <!-- Current Active Section Indicator -->
+      <div class="header-right">
+        <span class="current-section-badge" id="currentSectionBadge" onclick="window.toggleLeftMenu()" title="Click to open menu">
+          🧠 Study
+        </span>
       </div>
     </div>
   </header>
+
+  <!-- Left Sidebar Drawer (Only shows when clicked on) -->
+  <div class="menu-backdrop" id="menuBackdrop" onclick="window.closeLeftMenu()"></div>
+  <aside class="sidebar-drawer" id="sidebarDrawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div class="drawer-brand">
+        <span class="brand-badge">VERITAS</span>
+        <div class="drawer-title">Navigation<span>Menu</span></div>
+      </div>
+      <button class="drawer-close-btn" onclick="window.closeLeftMenu()" aria-label="Close menu">✕</button>
+    </div>
+
+    <div class="drawer-content">
+      <div class="drawer-nav-section-title">SECTIONS & RESEARCH MODULES</div>
+
+      <nav class="drawer-nav">
+        <!-- 1. Behavioral Test Section -->
+        <button class="drawer-nav-item active" id="menuItemSurvey" onclick="window.navigateToSection('survey')">
+          <span class="drawer-nav-icon">🧠</span>
+          <div class="drawer-nav-text">
+            <div class="drawer-nav-label">Decision Game</div>
+            <div class="drawer-nav-sub">7-Scenario Behavioral Economics Study</div>
+          </div>
+        </button>
+
+        <!-- 2. Research Analytics Section (Moved into the menu bar) -->
+        <button class="drawer-nav-item" id="menuItemAnalytics" onclick="window.navigateToSection('analytics')">
+          <span class="drawer-nav-icon">📊</span>
+          <div class="drawer-nav-text">
+            <div class="drawer-nav-label">Research Analytics</div>
+            <div class="drawer-nav-sub">Aggregate Data, Chi-Square & Exports</div>
+          </div>
+          <span class="drawer-lock-indicator" id="menuLockAnalytics">🔒</span>
+        </button>
+
+        <!-- 3. Political Market Predictor Section (Separate Section) -->
+        <button class="drawer-nav-item" id="menuItemMarket" onclick="window.navigateToSection('market')">
+          <span class="drawer-nav-icon">⚡</span>
+          <div class="drawer-nav-text">
+            <div class="drawer-nav-label">Political Market Predictor</div>
+            <div class="drawer-nav-sub">News NLP & Monte Carlo Simulator</div>
+          </div>
+          <span class="drawer-lock-indicator" id="menuLockMarket">🔒</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="drawer-footer">
+      <div class="drawer-status-card" id="drawerStatusCard">
+        <div class="drawer-status-row">
+          <span class="status-dot locked" id="drawerStatusDot"></span>
+          <span class="status-label" id="drawerStatusLabel">Researcher PIN: Locked</span>
+        </div>
+        <button class="btn-drawer-auth" id="drawerAuthBtn" onclick="window.drawerAuthAction()">
+          Unlock Access (1661) →
+        </button>
+      </div>
+    </div>
+  </aside>
 
   <!-- Main Viewport Container -->
   <main class="main-content" id="mainApp">

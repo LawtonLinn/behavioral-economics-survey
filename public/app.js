@@ -79,13 +79,13 @@ async function initSession() {
     state.sessionId = data.sessionId;
     state.cohort = data.cohort;
     telemetry.initSession(state.sessionId, state.cohort);
-    updateAdminButton();
+    updateMenuState();
     render();
   } catch (err) {
     state.sessionId = 'session-' + Date.now();
     state.cohort = Math.random() < 0.5 ? 'Alpha' : 'Beta';
     telemetry.initSession(state.sessionId, state.cohort);
-    updateAdminButton();
+    updateMenuState();
     render();
   }
 }
@@ -350,6 +350,123 @@ window.setConfidenceRating = (rating) => {
   });
 };
 
+// Left Sidebar Menu Drawer Controls
+window.toggleLeftMenu = () => {
+  const drawer = document.getElementById('sidebarDrawer');
+  if (!drawer) return;
+  const isOpen = drawer.classList.contains('open');
+  if (isOpen) {
+    window.closeLeftMenu();
+  } else {
+    window.openLeftMenu();
+  }
+};
+
+window.openLeftMenu = () => {
+  const drawer = document.getElementById('sidebarDrawer');
+  const backdrop = document.getElementById('menuBackdrop');
+  if (drawer) {
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+  }
+  if (backdrop) {
+    backdrop.classList.add('active');
+  }
+  updateMenuState();
+};
+
+window.closeLeftMenu = () => {
+  const drawer = document.getElementById('sidebarDrawer');
+  const backdrop = document.getElementById('menuBackdrop');
+  if (drawer) {
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+  }
+  if (backdrop) {
+    backdrop.classList.remove('active');
+  }
+};
+
+// Section Navigation Handler from Menu Bar
+window.navigateToSection = (targetMode) => {
+  window.closeLeftMenu();
+  if (targetMode === 'survey') {
+    window.switchMode('survey');
+    return;
+  }
+  if (!state.isAdmin) {
+    window.promptAdminLogin(targetMode);
+    return;
+  }
+  window.switchMode(targetMode);
+};
+
+window.drawerAuthAction = () => {
+  if (state.isAdmin) {
+    state.isAdmin = false;
+    state.adminPin = '';
+    sessionStorage.removeItem('veritas_admin_pin');
+    showToast('Researcher mode locked.');
+    updateMenuState();
+    if (state.mode !== 'survey') {
+      window.switchMode('survey');
+    }
+  } else {
+    window.closeLeftMenu();
+    window.promptAdminLogin(state.mode === 'market' ? 'market' : 'analytics');
+  }
+};
+
+function updateMenuState() {
+  // Update Active Item in Drawer
+  const itemSurvey = document.getElementById('menuItemSurvey');
+  const itemAnalytics = document.getElementById('menuItemAnalytics');
+  const itemMarket = document.getElementById('menuItemMarket');
+  if (itemSurvey) itemSurvey.classList.toggle('active', state.mode === 'survey');
+  if (itemAnalytics) itemAnalytics.classList.toggle('active', state.mode === 'analytics');
+  if (itemMarket) itemMarket.classList.toggle('active', state.mode === 'market');
+
+  // Update Lock Indicators in Drawer
+  const lockAnalytics = document.getElementById('menuLockAnalytics');
+  const lockMarket = document.getElementById('menuLockMarket');
+  if (lockAnalytics) {
+    lockAnalytics.innerText = state.isAdmin ? '🔓' : '🔒';
+    lockAnalytics.classList.toggle('unlocked', state.isAdmin);
+  }
+  if (lockMarket) {
+    lockMarket.innerText = state.isAdmin ? '🔓' : '🔒';
+    lockMarket.classList.toggle('unlocked', state.isAdmin);
+  }
+
+  // Update Status Card in Drawer
+  const statusDot = document.getElementById('drawerStatusDot');
+  const statusLabel = document.getElementById('drawerStatusLabel');
+  const authBtn = document.getElementById('drawerAuthBtn');
+  if (statusDot) {
+    statusDot.className = `status-dot ${state.isAdmin ? 'unlocked' : 'locked'}`;
+  }
+  if (statusLabel) {
+    statusLabel.innerText = state.isAdmin ? 'Researcher Access: Unlocked' : 'Researcher Access: Locked';
+  }
+  if (authBtn) {
+    authBtn.innerText = state.isAdmin ? '🔒 Lock Access' : 'Unlock Access (1661) →';
+  }
+
+  // Update Top Header Current Section Badge
+  const badge = document.getElementById('currentSectionBadge');
+  if (badge) {
+    if (state.mode === 'survey') {
+      badge.innerHTML = `🧠 Study`;
+    } else if (state.mode === 'analytics') {
+      badge.innerHTML = `📊 Research`;
+    } else if (state.mode === 'market') {
+      badge.innerHTML = `⚡ Market Predictor`;
+    }
+  }
+
+  updateAdminButton();
+}
+
 // Admin Password Gate
 window.promptAdminLogin = (targetMode = 'analytics') => {
   if (state.isAdmin) {
@@ -368,7 +485,7 @@ window.promptAdminLogin = (targetMode = 'analytics') => {
   const title = targetMode === 'market' ? 'Political Market Simulator' : 'Researcher Access';
   const desc = targetMode === 'market' 
     ? 'Enter access code <b>1661</b> to unlock the quantitative political estimation model:' 
-    : 'Enter your secret Admin PIN to view aggregate responses and analytics:';
+    : 'Enter your secret Admin PIN (1661) to view aggregate responses and analytics:';
 
   modal.innerHTML = `
     <div class="modal-content" style="max-width: 400px; text-align: center;">
@@ -441,17 +558,9 @@ window.switchMode = (mode) => {
     return;
   }
   state.mode = mode;
-  updateNavTabs();
+  updateMenuState();
   render();
 };
-
-function updateNavTabs() {
-  const surveyBtn = document.getElementById('navSurveyBtn');
-  const marketBtn = document.getElementById('navMarketBtn');
-  if (surveyBtn) surveyBtn.classList.toggle('active', state.mode === 'survey');
-  if (marketBtn) marketBtn.classList.toggle('active', state.mode === 'market');
-  updateAdminButton();
-}
 
 function render() {
   const container = document.getElementById('mainApp');
@@ -1156,6 +1265,9 @@ async function renderAnalyticsPortal(container) {
         </div>
 
         <div class="analytics-actions">
+          <button class="btn-action-sm" onclick="window.toggleLeftMenu()">
+            ☰ Menu
+          </button>
           <button class="btn-action-sm" onclick="window.seedBenchmarkData()">
             ⚡ Seed 50 Demo Responses
           </button>
@@ -1675,9 +1787,14 @@ function renderMarketPredictorView(container) {
               Multi-factor natural language processing combined with historical asset beta sensitivity and Monte Carlo drift simulation to forecast market reactions to political events.
             </p>
           </div>
-          <button class="btn-secondary" style="font-size: 0.85rem;" onclick="window.switchMode('survey')">
-            ← Back to Game
-          </button>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn-secondary" style="font-size: 0.85rem;" onclick="window.toggleLeftMenu()">
+              ☰ Switch Section
+            </button>
+            <button class="btn-secondary" style="font-size: 0.85rem;" onclick="window.navigateToSection('survey')">
+              ← Return to Study
+            </button>
+          </div>
         </div>
       </div>
 
