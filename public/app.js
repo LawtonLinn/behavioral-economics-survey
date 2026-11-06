@@ -2161,18 +2161,18 @@ function renderMarketPredictorView(container) {
       ${result ? `
         <div style="animation: fadeIn 0.4s ease forwards;">
           <!-- Regime & Macro Card -->
-          <div class="card" style="border: 1px solid rgba(56, 189, 248, 0.4); margin-bottom: 1.5rem; background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(2,6,23,0.95) 100%);">
+          <div class="card" style="border: 1px solid var(--border-color); margin-bottom: 1.5rem; background: #111827;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
               <div>
-                <span class="badge-tag magenta">FORECAST REGIME</span>
-                <h3 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-top: 0.25rem;">
+                <span class="badge-tag cyan">FORECAST REGIME</span>
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #fff; margin-top: 0.25rem;">
                   ${result.regime}
                 </h3>
               </div>
               <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
                 <div class="stat-card" style="padding: 0.6rem 1rem;">
                   <span class="stat-label">Domain</span>
-                  <span class="stat-value" style="font-size: 0.95rem; color: #38bdf8;">${result.analysis.domainLabel}</span>
+                  <span class="stat-value" style="font-size: 0.95rem; color: #60a5fa;">${result.analysis.domainLabel}</span>
                 </div>
                 <div class="stat-card" style="padding: 0.6rem 1rem;">
                   <span class="stat-label">Sentiment</span>
