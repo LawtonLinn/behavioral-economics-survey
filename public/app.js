@@ -1168,6 +1168,9 @@ async function renderAnalyticsPortal(container) {
           <button class="btn-action-sm danger" onclick="window.resetData()">
             🗑️ Clear Responses
           </button>
+          <button class="btn-action-sm" style="border-color: rgba(244,63,94,0.4); color: #fb7185;" onclick="window.adminLogout()">
+            🔒 Lock Portal
+          </button>
         </div>
       </div>
 
@@ -1474,6 +1477,14 @@ window.resetData = async () => {
   } catch (err) {
     showToast('Failed to clear data.');
   }
+};
+
+window.adminLogout = () => {
+  state.isAdmin = false;
+  state.adminPin = '';
+  sessionStorage.removeItem('veritas_admin_pin');
+  showToast('Locked. PIN required to re-enter.');
+  window.switchMode('survey');
 };
 
 window.exportCsv = () => {
