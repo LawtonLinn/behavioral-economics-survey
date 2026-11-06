@@ -20,11 +20,19 @@
         <div class="brand-title">Decision<span>Game</span></div>
       </div>
 
-      <!-- Secret Admin Lock (Only visible / accessible with PIN) -->
+      <!-- Navigation Tabs & Protected Access -->
       <div class="nav-actions">
+        <button class="nav-tab-btn" id="navSurveyBtn" onclick="window.switchMode('survey')">
+          <span>🧠</span>
+          <span>Study</span>
+        </button>
+        <button class="nav-tab-btn" id="navMarketBtn" onclick="window.switchMode('market')">
+          <span>⚡</span>
+          <span>Market Predictor</span>
+        </button>
         <button class="admin-lock-btn" id="adminLockBtn" onclick="window.promptAdminLogin()">
           <span id="adminLockIcon">🔒</span>
-          <span id="adminLockText">Researcher Access</span>
+          <span id="adminLockText">Researcher</span>
         </button>
       </div>
     </div>

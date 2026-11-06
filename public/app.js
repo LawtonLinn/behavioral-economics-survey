@@ -1,9 +1,10 @@
 import { telemetry } from './telemetry.js';
 import { BehavioralCharts } from './charts.js';
+import { ASSETS, analyzePoliticalText, simulateMarketResponse } from './market-predictor.js';
 
 // Application State
 const state = {
-  mode: 'survey', // 'survey' | 'analytics'
+  mode: 'survey', // 'survey' | 'analytics' | 'market'
   sessionId: null,
   cohort: null, // 'Alpha' (Gain/High) | 'Beta' (Loss/Low)
   currentStepIndex: 0,
@@ -14,6 +15,20 @@ const state = {
   isAdmin: !!sessionStorage.getItem('veritas_admin_pin'),
   adminPin: sessionStorage.getItem('veritas_admin_pin') || '',
   
+  // Market Simulation Subsystem State
+  market: {
+    activeTab: 'text', // 'text' | 'url' | 'upload' | 'preset'
+    inputText: '',
+    inputUrl: '',
+    selectedPresetId: 'fed_rate_cut',
+    certainty: 75,
+    horizonDays: 30,
+    manualDirection: 'auto',
+    loading: false,
+    lastResult: null,
+    history: []
+  },
+
   // Responses
   responses: {
     framing_job_choice: null, // 'A' | 'B'
@@ -336,12 +351,12 @@ window.setConfidenceRating = (rating) => {
 };
 
 // Admin Password Gate
-window.promptAdminLogin = () => {
+window.promptAdminLogin = (targetMode = 'analytics') => {
   if (state.isAdmin) {
-    if (state.mode === 'analytics') {
+    if (state.mode === targetMode) {
       window.switchMode('survey');
     } else {
-      window.switchMode('analytics');
+      window.switchMode(targetMode);
     }
     return;
   }
@@ -350,12 +365,17 @@ window.promptAdminLogin = () => {
   const modal = document.createElement('div');
   modal.className = 'modal-overlay';
   modal.id = 'pinModal';
+  const title = targetMode === 'market' ? 'Political Market Simulator' : 'Researcher Access';
+  const desc = targetMode === 'market' 
+    ? 'Enter access code <b>1661</b> to unlock the quantitative political estimation model:' 
+    : 'Enter your secret Admin PIN to view aggregate responses and analytics:';
+
   modal.innerHTML = `
-    <div class="modal-content" style="max-width: 380px; text-align: center;">
-      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔒</div>
-      <h3 style="color: #fff; font-size: 1.35rem; font-weight: 800; margin-bottom: 0.4rem;">Researcher Access</h3>
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">${targetMode === 'market' ? '⚡' : '🔒'}</div>
+      <h3 style="color: #fff; font-size: 1.35rem; font-weight: 800; margin-bottom: 0.4rem;">${title}</h3>
       <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
-        Enter your secret Admin PIN to view aggregate responses and analytics:
+        ${desc}
       </p>
 
       <input type="password" 
@@ -368,7 +388,7 @@ window.promptAdminLogin = () => {
         <button class="btn-secondary" style="flex: 1;" onclick="document.getElementById('pinModal').remove()">
           Cancel
         </button>
-        <button class="btn-primary" style="flex: 1; justify-content: center;" onclick="window.submitAdminPin()">
+        <button class="btn-primary" style="flex: 1; justify-content: center;" onclick="window.submitAdminPin('${targetMode}')">
           Unlock →
         </button>
       </div>
@@ -381,13 +401,13 @@ window.promptAdminLogin = () => {
     if (input) {
       input.focus();
       input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') window.submitAdminPin();
+        if (e.key === 'Enter') window.submitAdminPin(targetMode);
       });
     }
   }, 100);
 };
 
-window.submitAdminPin = async () => {
+window.submitAdminPin = async (targetMode = 'analytics') => {
   const input = document.getElementById('adminPinInput');
   if (!input) return;
   const pin = input.value.trim();
@@ -404,8 +424,8 @@ window.submitAdminPin = async () => {
       state.adminPin = pin;
       sessionStorage.setItem('veritas_admin_pin', pin);
       document.getElementById('pinModal')?.remove();
-      showToast('Unlocked Researcher Dashboard!');
-      window.switchMode('analytics');
+      showToast(targetMode === 'market' ? 'Unlocked Market Predictor!' : 'Unlocked Researcher Dashboard!');
+      window.switchMode(targetMode);
     } else {
       input.style.borderColor = '#f43f5e';
       showToast('Incorrect PIN. Access Denied.');
@@ -416,14 +436,22 @@ window.submitAdminPin = async () => {
 };
 
 window.switchMode = (mode) => {
-  if (mode === 'analytics' && !state.isAdmin) {
-    window.promptAdminLogin();
+  if ((mode === 'analytics' || mode === 'market') && !state.isAdmin) {
+    window.promptAdminLogin(mode);
     return;
   }
   state.mode = mode;
-  updateAdminButton();
+  updateNavTabs();
   render();
 };
+
+function updateNavTabs() {
+  const surveyBtn = document.getElementById('navSurveyBtn');
+  const marketBtn = document.getElementById('navMarketBtn');
+  if (surveyBtn) surveyBtn.classList.toggle('active', state.mode === 'survey');
+  if (marketBtn) marketBtn.classList.toggle('active', state.mode === 'market');
+  updateAdminButton();
+}
 
 function render() {
   const container = document.getElementById('mainApp');
@@ -431,6 +459,8 @@ function render() {
 
   if (state.mode === 'analytics') {
     renderAnalyticsPortal(container);
+  } else if (state.mode === 'market') {
+    renderMarketPredictorView(container);
   } else {
     renderSurveyView(container);
   }
@@ -1453,6 +1483,463 @@ window.exportCsv = () => {
 window.exportJson = () => {
   window.location.href = `/api/survey/export.json?pin=${encodeURIComponent(state.adminPin)}`;
 };
+
+// =============================================================
+// POLITICAL MARKET PREDICTOR & SIMULATION INTERFACE
+// =============================================================
+const PRESET_NEWS = [
+  {
+    id: 'fed_rate_cut',
+    title: 'Federal Reserve announces surprise 50 bps emergency interest rate cut to bolster liquidity',
+    category: 'Monetary Policy',
+    certainty: 95,
+    text: 'The Federal Reserve unanimously voted to cut the federal funds rate by 50 basis points at an unscheduled emergency meeting, citing cooling inflation metrics and labor market stabilization needs. Chairman Powell emphasized quantitative easing liquidity backstops.'
+  },
+  {
+    id: 'us_china_tariffs',
+    title: 'White House issues executive order imposing 35% tariffs on imported steel and solar panels',
+    category: 'Trade & Protectionism',
+    certainty: 90,
+    text: 'The President signed a sweeping executive tariff schedule imposing a 35% duty on imported foreign manufactured steel, critical minerals, and renewable equipment. Trade representatives warn of retaliatory export restrictions from key trading partners.'
+  },
+  {
+    id: 'mideast_escalation',
+    title: 'Strait of Hormuz maritime blockade threats escalate geopolitical tension, military deployed',
+    category: 'Geopolitics & Defense',
+    certainty: 80,
+    text: 'Naval strike groups have been scrambled to the Persian Gulf following direct missile threats against oil tankers transiting the Strait of Hormuz. Pentagon officials confirmed expedited defense contract allocations for anti-missile defense interceptors.'
+  },
+  {
+    id: 'clean_energy_subsidy',
+    title: 'Congress passes massive $120B clean energy tax credit expansion for grid modernization',
+    category: 'Energy & Climate',
+    certainty: 88,
+    text: 'A bipartisan coalition passed legislation extending solar, battery storage, and advanced nuclear subsidies through 2035, while establishing accelerated depreciation deductions for domestic renewable infrastructure builders.'
+  },
+  {
+    id: 'corporate_tax_overhaul',
+    title: 'Senate committee proposes increasing statutory corporate tax rate from 21% to 28%',
+    category: 'Taxation & Fiscal',
+    certainty: 55,
+    text: 'Lawmakers in the Senate Finance Committee drafted legislation targeting corporate income and high-volume stock buybacks with an increased headline corporate rate of 28% and a minimum global tax on offshore intellectual property.'
+  }
+];
+
+window.setMarketInputTab = (tab) => {
+  state.market.activeTab = tab;
+  renderMarketPredictorView(document.getElementById('mainApp'));
+};
+
+window.selectMarketPreset = (presetId) => {
+  const found = PRESET_NEWS.find(p => p.id === presetId);
+  if (!found) return;
+  state.market.selectedPresetId = presetId;
+  state.market.inputText = found.text;
+  state.market.certainty = found.certainty;
+  renderMarketPredictorView(document.getElementById('mainApp'));
+};
+
+window.handleFileUpload = (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const content = e.target.result;
+    state.market.inputText = content;
+    state.market.activeTab = 'text';
+    showToast(`Loaded file: ${file.name}`);
+    renderMarketPredictorView(document.getElementById('mainApp'));
+  };
+  reader.readAsText(file);
+};
+
+window.fetchUrlArticle = async () => {
+  const urlInput = document.getElementById('marketUrlInput');
+  const targetUrl = urlInput?.value?.trim();
+  if (!targetUrl) {
+    showToast('Please enter a valid news URL');
+    return;
+  }
+
+  const btn = document.getElementById('fetchUrlBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = 'Extracting...';
+  }
+
+  try {
+    const res = await fetch('/api/market/fetch-url', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Pin': state.adminPin
+      },
+      body: JSON.stringify({ url: targetUrl })
+    });
+    const json = await res.json();
+    if (json.success && json.extractedText) {
+      state.market.inputText = `${json.title}\n\n${json.description}\n\n${json.extractedText}`;
+      state.market.inputUrl = targetUrl;
+      state.market.activeTab = 'text';
+      showToast('Successfully extracted news article!');
+      renderMarketPredictorView(document.getElementById('mainApp'));
+    } else {
+      showToast(json.error || 'Failed to extract article content.');
+    }
+  } catch (err) {
+    showToast('Failed to connect to extraction server.');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = 'Extract & Populate →';
+    }
+  }
+};
+
+window.runMarketPrediction = () => {
+  const textarea = document.getElementById('marketTextInput');
+  const text = textarea ? textarea.value.trim() : state.market.inputText;
+  if (!text) {
+    showToast('Please enter political news text or choose a preset.');
+    return;
+  }
+
+  const certaintySlider = document.getElementById('marketCertaintyInput');
+  const certaintyVal = certaintySlider ? Number(certaintySlider.value) : state.market.certainty;
+  
+  const horizonSelect = document.getElementById('marketHorizonSelect');
+  const horizonVal = horizonSelect ? Number(horizonSelect.value) : state.market.horizonDays;
+
+  const directionSelect = document.getElementById('marketDirectionSelect');
+  const directionVal = directionSelect ? directionSelect.value : state.market.manualDirection;
+
+  state.market.inputText = text;
+  state.market.certainty = certaintyVal;
+  state.market.horizonDays = horizonVal;
+  state.market.manualDirection = directionVal;
+
+  // Run NLP Analysis
+  const analysis = analyzePoliticalText(text);
+
+  // Run Monte Carlo Market Projection
+  const sim = simulateMarketResponse(analysis, {
+    horizonDays: horizonVal,
+    userCertainty: certaintyVal,
+    manualDirection: directionVal === 'auto' ? null : directionVal
+  });
+
+  state.market.lastResult = sim;
+  state.market.history.unshift({
+    headline: text.slice(0, 85) + '...',
+    timestamp: new Date().toLocaleTimeString(),
+    domain: analysis.domainLabel,
+    regime: sim.regime
+  });
+  if (state.market.history.length > 5) state.market.history.pop();
+
+  triggerHaptic(20);
+  showToast('Simulation complete: Asset vectors projected.');
+  renderMarketPredictorView(document.getElementById('mainApp'));
+};
+
+function renderMarketPredictorView(container) {
+  const result = state.market.lastResult;
+  const currentText = state.market.inputText || PRESET_NEWS[0].text;
+
+  container.innerHTML = `
+    <div class="market-container">
+      <!-- Top Overview Header -->
+      <div class="market-hero-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem;">
+              <span class="badge-tag cyan">⚡ QUANTITATIVE ESTIMATION</span>
+              <span style="font-size: 0.8rem; color: #10b981; font-family: var(--font-mono); font-weight: 700;">PIN: 1661 VERIFIED</span>
+            </div>
+            <h1 style="font-size: 1.85rem; font-weight: 900; color: #fff; letter-spacing: -0.02em;">
+              Political News & Policy Market Predictor
+            </h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 680px; margin-top: 0.4rem;">
+              Multi-factor natural language processing combined with historical asset beta sensitivity and Monte Carlo drift simulation to forecast market reactions to political events.
+            </p>
+          </div>
+          <button class="btn-secondary" style="font-size: 0.85rem;" onclick="window.switchMode('survey')">
+            ← Back to Game
+          </button>
+        </div>
+      </div>
+
+      <!-- Input & Controls Section -->
+      <div class="card" style="padding: 1.5rem;">
+        <div class="input-tab-nav">
+          <button class="${state.market.activeTab === 'text' ? 'active' : ''}" onclick="window.setMarketInputTab('text')">
+            📝 Text / Headline
+          </button>
+          <button class="${state.market.activeTab === 'url' ? 'active' : ''}" onclick="window.setMarketInputTab('url')">
+            🔗 News URL
+          </button>
+          <button class="${state.market.activeTab === 'upload' ? 'active' : ''}" onclick="window.setMarketInputTab('upload')">
+            📂 Document Upload
+          </button>
+          <button class="${state.market.activeTab === 'preset' ? 'active' : ''}" onclick="window.setMarketInputTab('preset')">
+            ⚡ Quick Presets
+          </button>
+        </div>
+
+        <!-- TAB: TEXT -->
+        ${state.market.activeTab === 'text' ? `
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.5rem;">
+              Political News Article, Bill Text, or Speech Excerpt:
+            </label>
+            <textarea id="marketTextInput" 
+                      rows="4" 
+                      style="width: 100%; padding: 0.85rem; border-radius: 10px; background: rgba(10,14,26,0.85); border: 1px solid rgba(255,255,255,0.18); color: #fff; font-family: inherit; font-size: 0.92rem; resize: vertical;" 
+                      placeholder="e.g. White House announces aggressive export curbs on AI chips, while considering broad reciprocal trade tariffs...">${currentText}</textarea>
+          </div>
+        ` : ''}
+
+        <!-- TAB: URL -->
+        ${state.market.activeTab === 'url' ? `
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.5rem;">
+              Insert Live Political News Article URL:
+            </label>
+            <div style="display: flex; gap: 0.75rem;">
+              <input type="url" 
+                     id="marketUrlInput" 
+                     placeholder="https://www.reuters.com/... or https://bloomberg.com/..." 
+                     value="${state.market.inputUrl}"
+                     style="flex: 1; padding: 0.75rem 1rem; border-radius: 10px; background: rgba(10,14,26,0.85); border: 1px solid rgba(255,255,255,0.18); color: #fff;" />
+              <button id="fetchUrlBtn" class="btn-primary" onclick="window.fetchUrlArticle()">
+                Extract & Populate →
+              </button>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+              Our backend proxy fetches the webpage, scrubs boilerplate ads and navigation, and feeds the sanitized political text directly into the analyzer.
+            </p>
+          </div>
+        ` : ''}
+
+        <!-- TAB: UPLOAD -->
+        ${state.market.activeTab === 'upload' ? `
+          <div style="text-align: center; padding: 2rem 1rem; border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; background: rgba(255,255,255,0.02);">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📄</div>
+            <h4 style="font-size: 1rem; color: #fff; margin-bottom: 0.3rem;">Upload Political Research Document or Press Release</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+              Supports .txt, .md, .csv, and plain-text policy drafts.
+            </p>
+            <input type="file" id="marketFileInput" accept=".txt,.md,.csv,.json" style="display: none;" onchange="window.handleFileUpload(event)" />
+            <button class="btn-secondary" onclick="document.getElementById('marketFileInput').click()">
+              Choose File from Computer
+            </button>
+          </div>
+        ` : ''}
+
+        <!-- TAB: PRESETS -->
+        ${state.market.activeTab === 'preset' ? `
+          <div>
+            <label style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.6rem;">
+              Select a Calibrated Political Benchmark Scenario:
+            </label>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+              ${PRESET_NEWS.map(p => `
+                <div class="preset-chip ${state.market.selectedPresetId === p.id ? 'active' : ''}" onclick="window.selectMarketPreset('${p.id}')">
+                  <span>${p.category}:</span> <b>${p.title.slice(0, 48)}...</b>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Simulation Estimation Modifiers -->
+        <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.1); display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem;">
+          <div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
+              <label style="font-size: 0.8rem; font-weight: 700; color: #cbd5e1;">Political Certainty</label>
+              <span id="certaintyDisplayVal" style="font-size: 0.8rem; font-family: var(--font-mono); color: #38bdf8;">${state.market.certainty}%</span>
+            </div>
+            <input type="range" 
+                   id="marketCertaintyInput" 
+                   min="20" 
+                   max="100" 
+                   value="${state.market.certainty}" 
+                   style="width: 100%; accent-color: #38bdf8;"
+                   oninput="document.getElementById('certaintyDisplayVal').innerText = this.value + '%'" />
+            <span style="font-size: 0.72rem; color: var(--text-muted);">Probability that legislation/policy is enacted</span>
+          </div>
+
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.35rem;">
+              Forecast Horizon
+            </label>
+            <select id="marketHorizonSelect" style="width: 100%; padding: 0.5rem; border-radius: 8px; background: rgba(10,14,26,0.9); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.85rem;">
+              <option value="7" ${state.market.horizonDays === 7 ? 'selected' : ''}>7 Days (Immediate Shock Response)</option>
+              <option value="30" ${state.market.horizonDays === 30 ? 'selected' : ''}>30 Days (Medium-term Absorption)</option>
+              <option value="90" ${state.market.horizonDays === 90 ? 'selected' : ''}>90 Days (Quarterly Policy Cycle)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.8rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.35rem;">
+              Directional Bias Override
+            </label>
+            <select id="marketDirectionSelect" style="width: 100%; padding: 0.5rem; border-radius: 8px; background: rgba(10,14,26,0.9); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.85rem;">
+              <option value="auto" ${state.market.manualDirection === 'auto' ? 'selected' : ''}>🤖 Auto-Detect (NLP Sentiment)</option>
+              <option value="bullish" ${state.market.manualDirection === 'bullish' ? 'selected' : ''}>📈 Force Pro-Growth / Bullish Bias</option>
+              <option value="bearish" ${state.market.manualDirection === 'bearish' ? 'selected' : ''}>📉 Force Contractionary / Bearish Bias</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+          <button class="btn-primary" style="padding: 0.8rem 1.8rem; font-size: 0.95rem; font-weight: 800;" onclick="window.runMarketPrediction()">
+            ⚡ Run Prediction Engine
+          </button>
+        </div>
+      </div>
+
+      <!-- RESULTS SECTION -->
+      ${result ? `
+        <div style="animation: fadeIn 0.4s ease forwards;">
+          <!-- Regime & Macro Card -->
+          <div class="card" style="border: 1px solid rgba(56, 189, 248, 0.4); margin-bottom: 1.5rem; background: linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(2,6,23,0.95) 100%);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+              <div>
+                <span class="badge-tag magenta">FORECAST REGIME</span>
+                <h3 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-top: 0.25rem;">
+                  ${result.regime}
+                </h3>
+              </div>
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <div class="stat-card" style="padding: 0.6rem 1rem;">
+                  <span class="stat-label">Domain</span>
+                  <span class="stat-value" style="font-size: 0.95rem; color: #38bdf8;">${result.analysis.domainLabel}</span>
+                </div>
+                <div class="stat-card" style="padding: 0.6rem 1rem;">
+                  <span class="stat-label">Sentiment</span>
+                  <span class="stat-value" style="font-size: 0.95rem; color: ${result.analysis.sentimentScore >= 0 ? '#34d399' : '#fb7185'};">
+                    ${result.analysis.sentimentScore > 0 ? '+' : ''}${result.analysis.sentimentScore}
+                  </span>
+                </div>
+                <div class="stat-card" style="padding: 0.6rem 1rem;">
+                  <span class="stat-label">Assumed Certainty</span>
+                  <span class="stat-value" style="font-size: 0.95rem; color: #facc15;">${result.certaintyAssumed}%</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <span>Key Extracted Signal Tokens:</span>
+              ${result.analysis.keywordsFound.map(kw => `
+                <span style="font-family: var(--font-mono); background: rgba(255,255,255,0.08); padding: 0.15rem 0.45rem; border-radius: 6px; font-size: 0.75rem; color: #cbd5e1;">
+                  ${kw}
+                </span>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Top Winners & Top Losers Grid -->
+          <div class="pmp-grid-2" style="margin-bottom: 1.5rem;">
+            <!-- Winners -->
+            <div class="card" style="border-left: 4px solid #10b981;">
+              <h4 style="font-size: 1rem; font-weight: 800; color: #34d399; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>🚀</span> Top Expected Beneficiaries
+              </h4>
+              <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                ${result.topWinners.length ? result.topWinners.map(w => `
+                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(16, 185, 129, 0.08); border-radius: 8px;">
+                    <div>
+                      <b style="color: #fff; font-size: 0.9rem;">${w.icon} ${w.assetId}</b>
+                      <span style="font-size: 0.78rem; color: var(--text-muted); margin-left: 0.5rem;">${w.name}</span>
+                    </div>
+                    <span class="pill-bullish" style="font-weight: 700;">+${w.expectedShiftPct}%</span>
+                  </div>
+                `).join('') : '<p style="color: var(--text-muted); font-size: 0.85rem;">No sectors showing significant upside under this policy shock.</p>'}
+              </div>
+            </div>
+
+            <!-- Losers -->
+            <div class="card" style="border-left: 4px solid #f43f5e;">
+              <h4 style="font-size: 1rem; font-weight: 800; color: #fb7185; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>⚠️</span> Top Expected Headwinds
+              </h4>
+              <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                ${result.topLosers.length ? result.topLosers.map(l => `
+                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(244, 63, 94, 0.08); border-radius: 8px;">
+                    <div>
+                      <b style="color: #fff; font-size: 0.9rem;">${l.icon} ${l.assetId}</b>
+                      <span style="font-size: 0.78rem; color: var(--text-muted); margin-left: 0.5rem;">${l.name}</span>
+                    </div>
+                    <span class="pill-bearish" style="font-weight: 700;">${l.expectedShiftPct}%</span>
+                  </div>
+                `).join('') : '<p style="color: var(--text-muted); font-size: 0.85rem;">No sectors showing significant downside under this policy shock.</p>'}
+              </div>
+            </div>
+          </div>
+
+          <!-- All Asset Classes Breakdown -->
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 1rem;">
+            Full Asset Sensitivity & Monte Carlo Trajectories (${result.horizonDays}-Day Horizon)
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+            ${result.assets.map(asset => {
+              const isUp = asset.expectedShiftPct > 0;
+              const isNeutral = Math.abs(asset.expectedShiftPct) <= 0.3;
+              const strokeColor = isNeutral ? '#94a3b8' : (isUp ? '#10b981' : '#f43f5e');
+
+              // Generate SVG Sparkline Points
+              const minP = Math.min(...asset.trajectory.map(t => t.bear));
+              const maxP = Math.max(...asset.trajectory.map(t => t.bull));
+              const range = (maxP - minP) || 1;
+              const points = asset.trajectory.map((t, idx) => {
+                const x = (idx / result.horizonDays) * 240;
+                const y = 50 - ((t.base - minP) / range) * 45;
+                return `${x.toFixed(1)},${y.toFixed(1)}`;
+              }).join(' ');
+
+              return `
+                <div class="asset-card">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                      <span style="font-size: 1.2rem;">${asset.icon}</span>
+                      <strong style="color: #fff; font-size: 0.95rem; margin-left: 0.3rem;">${asset.assetId}</strong>
+                      <div style="font-size: 0.75rem; color: var(--text-muted);">${asset.name}</div>
+                    </div>
+                    <span class="stat-metric-pill ${isNeutral ? 'pill-neutral' : (isUp ? 'pill-bullish' : 'pill-bearish')}">
+                      ${isUp ? '+' : ''}${asset.expectedShiftPct}%
+                    </span>
+                  </div>
+
+                  <!-- Sparkline Chart -->
+                  <div>
+                    <svg class="sparkline-svg" viewBox="0 0 240 60">
+                      <polyline fill="none" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${points}" />
+                    </svg>
+                  </div>
+
+                  <div style="display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.5rem;">
+                    <span>95% CI: <b style="color: #cbd5e1;">${asset.confidenceLower}% to ${asset.confidenceUpper}%</b></span>
+                    <span style="color: ${strokeColor}; font-weight: 700;">${asset.stance}</span>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      ` : `
+        <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.15); border-radius: 16px;">
+          <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📊</div>
+          <p style="font-size: 0.95rem; color: #cbd5e1; font-weight: 600;">Prediction engine ready.</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Click <b>"Run Prediction Engine"</b> above to extract political sentiment and project asset vectors.
+          </p>
+        </div>
+      `}
+    </div>
+  `;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   initSession();

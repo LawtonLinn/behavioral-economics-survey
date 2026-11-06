@@ -373,7 +373,77 @@ const server = http.createServer(async (req, res) => {
   // Health
   if (pathname === '/api/health' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'healthy', version: '2.2.0' }));
+    res.end(JSON.stringify({ status: 'healthy', version: '2.3.0' }));
+    return;
+  }
+
+  // URL Scraping / Article Fetch Proxy (Extract clean headline & body from URL)
+  if (pathname === '/api/market/fetch-url' && req.method === 'POST') {
+    if (!verifyAdmin(req, url)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized: PIN required' }));
+      return;
+    }
+    try {
+      const body = await parseJsonBody(req);
+      const targetUrl = body.url;
+      if (!targetUrl || !/^https?:\/\//i.test(targetUrl)) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Valid HTTP/HTTPS URL required' }));
+        return;
+      }
+
+      // Fetch webpage with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 7000);
+      const response = await fetch(targetUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        },
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        res.writeHead(502, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: `Remote server responded with HTTP ${response.status}` }));
+        return;
+      }
+
+      const html = await response.text();
+
+      // Extract title
+      const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+      const title = titleMatch ? titleMatch[1].trim() : '';
+
+      // Extract meta description or og:description
+      const ogDescMatch = html.match(/<meta[^>]*property=["']og:description["'][^>]*content=["']([^"']+)["']/i) ||
+                          html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:description["']/i) ||
+                          html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i);
+      const description = ogDescMatch ? ogDescMatch[1].trim() : '';
+
+      // Strip tags from body to get snippet
+      const cleanBody = html
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, ' ')
+        .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, ' ')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 3000);
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        success: true,
+        url: targetUrl,
+        title: title || 'Political News Headline',
+        description,
+        extractedText: `${title} - ${description} - ${cleanBody.slice(0, 1500)}`.trim()
+      }));
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: `Failed to fetch URL: ${err.message}` }));
+    }
     return;
   }
 
