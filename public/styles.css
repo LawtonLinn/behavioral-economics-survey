@@ -539,6 +539,115 @@ header.app-header {
   overflow: visible;
 }
 
+/* Professional Candlestick & Grid Styling */
+.chart-view-selector {
+  display: flex;
+  background: rgba(10, 14, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.chart-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chart-tab-btn.active {
+  background: rgba(6, 182, 212, 0.22);
+  color: #38bdf8;
+}
+
+.chart-tab-btn:hover:not(.active) {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.candlestick-wrapper {
+  background: radial-gradient(circle at 50% 10%, rgba(18, 25, 45, 0.8) 0%, rgba(10, 14, 26, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  padding: 0.75rem 0.5rem 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.candlestick-svg {
+  width: 100%;
+  height: 195px;
+  display: block;
+}
+
+.candlestick-svg text {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  fill: #64748b;
+  user-select: none;
+}
+
+.candlestick-svg .grid-line {
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-dasharray: 2 3;
+}
+
+.candlestick-svg .baseline-ref {
+  stroke: rgba(56, 189, 248, 0.4);
+  stroke-dasharray: 4 4;
+}
+
+.candlestick-svg .axis-line {
+  stroke: rgba(255, 255, 255, 0.18);
+}
+
+.candlestick-svg .wick {
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.candlestick-svg .wick.green {
+  stroke: #10b981;
+}
+
+.candlestick-svg .wick.red {
+  stroke: #f43f5e;
+}
+
+.candlestick-svg .candle-body.green {
+  fill: #10b981;
+  stroke: #059669;
+  stroke-width: 0.75;
+}
+
+.candlestick-svg .candle-body.red {
+  fill: #f43f5e;
+  stroke: #e11d48;
+  stroke-width: 0.75;
+}
+
+.candle-hover-overlay {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  padding: 0.25rem 0.5rem 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 0.35rem;
+}
+
+.candle-hover-overlay span b {
+  font-weight: 700;
+}
+
 /* Main Content Area */
 main.main-content {
   flex: 1;

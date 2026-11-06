@@ -5,16 +5,16 @@
 
 // 1. Sector & Asset Taxonomy
 export const ASSETS = [
-  { id: 'SPY', name: 'S&P 500 ETF (SPY)', category: 'Equities', baseVol: 0.14, icon: '📈' },
-  { id: 'QQQ', name: 'Nasdaq 100 (Tech / Growth)', category: 'Equities', baseVol: 0.20, icon: '💻' },
-  { id: 'XLE', name: 'Energy Select Sector (XLE)', category: 'Commodities / Energy', baseVol: 0.24, icon: '🛢️' },
-  { id: 'ICLN', name: 'Clean Energy ETF (ICLN)', category: 'Renewables', baseVol: 0.28, icon: '🌱' },
-  { id: 'ITA', name: 'Aerospace & Defense (ITA)', category: 'Defense', baseVol: 0.16, icon: '🛡️' },
-  { id: 'XLF', name: 'Financial Sector ETF (XLF)', category: 'Financials', baseVol: 0.18, icon: '🏦' },
-  { id: 'TLT', name: '20+ Year Treasury Bond (TLT)', category: 'Bonds / Rates', baseVol: 0.15, icon: '📜' },
-  { id: 'GLD', name: 'SPDR Gold Shares (GLD)', category: 'Safe Haven', baseVol: 0.13, icon: '🪙' },
-  { id: 'UUP', name: 'US Dollar Index Bullish (UUP)', category: 'Currencies', baseVol: 0.08, icon: '💵' },
-  { id: 'BTC', name: 'Bitcoin (Risk & Speculation)', category: 'Crypto / Alternative', baseVol: 0.48, icon: '⚡' }
+  { id: 'SPY', name: 'S&P 500 ETF (SPY)', category: 'Equities', currentPrice: 592.50, baseVol: 0.14, icon: '📈' },
+  { id: 'QQQ', name: 'Nasdaq 100 (Tech / Growth)', category: 'Equities', currentPrice: 512.80, baseVol: 0.20, icon: '💻' },
+  { id: 'XLE', name: 'Energy Select Sector (XLE)', category: 'Commodities / Energy', currentPrice: 91.40, baseVol: 0.24, icon: '🛢️' },
+  { id: 'ICLN', name: 'Clean Energy ETF (ICLN)', category: 'Renewables', currentPrice: 13.85, baseVol: 0.28, icon: '🌱' },
+  { id: 'ITA', name: 'Aerospace & Defense (ITA)', category: 'Defense', currentPrice: 142.60, baseVol: 0.16, icon: '🛡️' },
+  { id: 'XLF', name: 'Financial Sector ETF (XLF)', category: 'Financials', currentPrice: 48.20, baseVol: 0.18, icon: '🏦' },
+  { id: 'TLT', name: '20+ Year Treasury Bond (TLT)', category: 'Bonds / Rates', currentPrice: 92.10, baseVol: 0.15, icon: '📜' },
+  { id: 'GLD', name: 'SPDR Gold Shares (GLD)', category: 'Safe Haven', currentPrice: 248.50, baseVol: 0.13, icon: '🪙' },
+  { id: 'UUP', name: 'US Dollar Index Bullish (UUP)', category: 'Currencies', currentPrice: 28.75, baseVol: 0.08, icon: '💵' },
+  { id: 'BTC', name: 'Bitcoin (Risk & Speculation)', category: 'Crypto / Alternative', currentPrice: 76400.00, baseVol: 0.48, icon: '⚡' }
 ];
 
 // 2. Policy Dictionaries & Sector Betas
@@ -260,7 +260,7 @@ export function simulateMarketResponse(analysis, options = {}) {
 
     // Monte Carlo runs for paths
     const paths = [];
-    const basePrice = 100.0;
+    const basePrice = asset.currentPrice || 100.0;
 
     for (let s = 0; s < numSimulations; s++) {
       const path = [basePrice];
@@ -292,7 +292,40 @@ export function simulateMarketResponse(analysis, options = {}) {
       trajectory.push({ day: d, bear: p5, base: p50, bull: p95 });
     }
 
-    const startPrice = trajectory[0].base;
+    // Generate Realistic Candlesticks (OHLC) for the median simulated path
+    const candles = [];
+    let currentOpen = basePrice;
+
+    for (let d = 1; d <= horizonDays; d++) {
+      const dayMedianClose = trajectory[d].base;
+      const dayBear = trajectory[d].bear;
+      const dayBull = trajectory[d].bull;
+
+      // Realistic intraday volatility range around the day's open and close
+      const dailySpread = Math.abs(dayBull - dayBear) / 5.5;
+      const intraVol = (asset.baseVol / Math.sqrt(252)) * currentOpen * 0.75;
+      const spread = Math.max(dailySpread, intraVol);
+
+      const high = Math.max(currentOpen, dayMedianClose) + Math.random() * spread;
+      const low = Math.min(currentOpen, dayMedianClose) - Math.random() * spread;
+      const close = dayMedianClose;
+
+      candles.push({
+        day: d,
+        label: `T+${d}`,
+        open: Number(currentOpen.toFixed(2)),
+        high: Number(high.toFixed(2)),
+        low: Number(Math.max(0.01, low).toFixed(2)),
+        close: Number(close.toFixed(2)),
+        isGreen: close >= currentOpen
+      });
+
+      // Next day opens near previous close with small overnight gap
+      const overnightGap = (Math.random() - 0.5) * (spread * 0.2);
+      currentOpen = Math.max(0.01, close + overnightGap);
+    }
+
+    const startPrice = basePrice;
     const endPrice = trajectory[horizonDays].base;
     const finalShiftPct = Number((((endPrice - startPrice) / startPrice) * 100).toFixed(2));
     const confidenceLower = Number((((trajectory[horizonDays].bear - startPrice) / startPrice) * 100).toFixed(2));
@@ -310,11 +343,14 @@ export function simulateMarketResponse(analysis, options = {}) {
       category: asset.category,
       icon: asset.icon,
       baseVol: asset.baseVol,
+      currentPrice: basePrice,
+      projectedPrice: endPrice,
       expectedShiftPct: finalShiftPct,
       confidenceLower,
       confidenceUpper,
       stance,
-      trajectory
+      trajectory,
+      candles
     });
   }
 

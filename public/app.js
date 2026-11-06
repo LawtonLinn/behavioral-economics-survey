@@ -18,6 +18,7 @@ const state = {
   // Market Simulation Subsystem State
   market: {
     activeTab: 'text', // 'text' | 'url' | 'upload' | 'preset'
+    activeChartView: 'candlestick', // 'candlestick' | 'montecarlo'
     inputText: '',
     inputUrl: '',
     selectedPresetId: 'fed_rate_cut',
@@ -1653,6 +1654,11 @@ window.setMarketInputTab = (tab) => {
   renderMarketPredictorView(document.getElementById('mainApp'));
 };
 
+window.setMarketChartView = (view) => {
+  state.market.activeChartView = view;
+  renderMarketPredictorView(document.getElementById('mainApp'));
+};
+
 window.selectMarketPreset = (presetId) => {
   const found = PRESET_NEWS.find(p => p.id === presetId);
   if (!found) return;
@@ -2007,49 +2013,210 @@ function renderMarketPredictorView(container) {
             </div>
           </div>
 
-          <!-- All Asset Classes Breakdown -->
-          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 1rem;">
-            Full Asset Sensitivity & Monte Carlo Trajectories (${result.horizonDays}-Day Horizon)
-          </h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;">
+          <!-- All Asset Classes Breakdown Header & View Switcher -->
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 0.2rem;">
+                Multi-Asset Forecast Models (${result.horizonDays}-Day Horizon)
+              </h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">
+                Realistic OHLC candlestick price discovery vs Monte Carlo median/confidence drift.
+              </p>
+            </div>
+
+            <div class="chart-view-selector">
+              <button class="chart-tab-btn ${state.market.activeChartView === 'candlestick' ? 'active' : ''}" onclick="window.setMarketChartView('candlestick')">
+                🕯️ Candlestick View
+              </button>
+              <button class="chart-tab-btn ${state.market.activeChartView === 'montecarlo' ? 'active' : ''}" onclick="window.setMarketChartView('montecarlo')">
+                📈 Monte Carlo Band View
+              </button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.25rem;">
             ${result.assets.map(asset => {
               const isUp = asset.expectedShiftPct > 0;
               const isNeutral = Math.abs(asset.expectedShiftPct) <= 0.3;
-              const strokeColor = isNeutral ? '#94a3b8' : (isUp ? '#10b981' : '#f43f5e');
+              const accentColor = isNeutral ? '#94a3b8' : (isUp ? '#10b981' : '#f43f5e');
 
-              // Generate SVG Sparkline Points
-              const minP = Math.min(...asset.trajectory.map(t => t.bear));
-              const maxP = Math.max(...asset.trajectory.map(t => t.bull));
-              const range = (maxP - minP) || 1;
-              const points = asset.trajectory.map((t, idx) => {
-                const x = (idx / result.horizonDays) * 240;
-                const y = 50 - ((t.base - minP) / range) * 45;
-                return `${x.toFixed(1)},${y.toFixed(1)}`;
-              }).join(' ');
+              // SVG Dimensions
+              const svgW = 380;
+              const svgH = 185;
+              const padLeft = 48;
+              const padRight = 14;
+              const padTop = 18;
+              const padBottom = 26;
+              const plotW = svgW - padLeft - padRight;
+              const plotH = svgH - padTop - padBottom;
+
+              const candles = asset.candles || [];
+              const trajectory = asset.trajectory || [];
+
+              // Price extremes
+              let allMin = Infinity;
+              let allMax = -Infinity;
+
+              candles.forEach(c => {
+                if (c.low < allMin) allMin = c.low;
+                if (c.high > allMax) allMax = c.high;
+              });
+
+              trajectory.forEach(t => {
+                if (t.bear < allMin) allMin = t.bear;
+                if (t.bull > allMax) allMax = t.bull;
+              });
+
+              if (!isFinite(allMin) || !isFinite(allMax) || allMax === allMin) {
+                allMin = (asset.currentPrice || 100) * 0.95;
+                allMax = (asset.currentPrice || 100) * 1.05;
+              }
+
+              // Give padding to price range
+              const priceMargin = (allMax - allMin) * 0.08 || 1;
+              const yMin = allMin - priceMargin;
+              const yMax = allMax + priceMargin;
+              const yRange = yMax - yMin;
+
+              const getY = (val) => padTop + plotH - ((val - yMin) / yRange) * plotH;
+              const getX = (dayIdx, totalDays) => padLeft + (dayIdx / totalDays) * plotW;
+
+              // Grid Y-Axis ticks (4 levels)
+              const yTicks = [
+                yMin + yRange * 0.1,
+                yMin + yRange * 0.4,
+                yMin + yRange * 0.7,
+                yMin + yRange * 0.95
+              ];
+
+              // Base Price Line
+              const basePriceY = getY(asset.currentPrice || 100);
+
+              // X-Axis day markers (5 ticks)
+              const totalDays = result.horizonDays;
+              const xTicks = [
+                { day: 1, label: 'T+1' },
+                { day: Math.round(totalDays * 0.25), label: `T+${Math.round(totalDays * 0.25)}` },
+                { day: Math.round(totalDays * 0.5), label: `T+${Math.round(totalDays * 0.5)}` },
+                { day: Math.round(totalDays * 0.75), label: `T+${Math.round(totalDays * 0.75)}` },
+                { day: totalDays, label: `T+${totalDays}` }
+              ];
+
+              let chartInnerSvg = '';
+
+              if (state.market.activeChartView === 'candlestick') {
+                // Render Candlesticks
+                const candleWidth = Math.max(3.5, Math.min(10, (plotW / candles.length) * 0.65));
+                const candleSvgElements = candles.map((c, i) => {
+                  const cx = getX(i + 0.5, candles.length);
+                  const wickTop = getY(c.high);
+                  const wickBottom = getY(c.low);
+                  const bodyTop = getY(Math.max(c.open, c.close));
+                  const bodyBottom = getY(Math.min(c.open, c.close));
+                  const bodyHeight = Math.max(1.5, bodyBottom - bodyTop);
+                  const colorClass = c.isGreen ? 'green' : 'red';
+
+                  return `
+                    <g class="candle-group">
+                      <!-- High-Low Wick -->
+                      <line class="wick ${colorClass}" x1="${cx.toFixed(1)}" y1="${wickTop.toFixed(1)}" x2="${cx.toFixed(1)}" y2="${wickBottom.toFixed(1)}" />
+                      <!-- Real Body -->
+                      <rect class="candle-body ${colorClass}" x="${(cx - candleWidth / 2).toFixed(1)}" y="${bodyTop.toFixed(1)}" width="${candleWidth.toFixed(1)}" height="${bodyHeight.toFixed(1)}" rx="1" />
+                    </g>
+                  `;
+                }).join('');
+
+                chartInnerSvg = candleSvgElements;
+              } else {
+                // Render Monte Carlo Tunnel
+                const bullPoints = trajectory.map((t, idx) => `${getX(idx, totalDays).toFixed(1)},${getY(t.bull).toFixed(1)}`).join(' ');
+                const bearPointsRev = [...trajectory].reverse().map((t, idx) => {
+                  const origIdx = totalDays - idx;
+                  return `${getX(origIdx, totalDays).toFixed(1)},${getY(t.bear).toFixed(1)}`;
+                }).join(' ');
+                const bandPolygon = `${bullPoints} ${bearPointsRev}`;
+
+                const medianPath = trajectory.map((t, idx) => `${getX(idx, totalDays).toFixed(1)},${getY(t.base).toFixed(1)}`).join(' ');
+
+                chartInnerSvg = `
+                  <!-- Confidence Corridor 90% Band -->
+                  <polygon points="${bandPolygon}" fill="${isUp ? 'rgba(16,185,129,0.12)' : 'rgba(244,63,94,0.12)'}" stroke="none" />
+                  <!-- Bull / Bear Boundaries -->
+                  <polyline points="${bullPoints}" fill="none" stroke="${isUp ? '#34d399' : '#fb7185'}" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.65" />
+                  <!-- Median Base Path -->
+                  <polyline points="${medianPath}" fill="none" stroke="${accentColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                `;
+              }
+
+              // Latest candle values
+              const lastCandle = candles[candles.length - 1] || { open: asset.currentPrice, close: asset.projectedPrice, high: asset.projectedPrice, low: asset.currentPrice };
 
               return `
                 <div class="asset-card">
+                  <!-- Header: Asset identity, price shift, stance -->
                   <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div>
-                      <span style="font-size: 1.2rem;">${asset.icon}</span>
-                      <strong style="color: #fff; font-size: 0.95rem; margin-left: 0.3rem;">${asset.assetId}</strong>
-                      <div style="font-size: 0.75rem; color: var(--text-muted);">${asset.name}</div>
+                      <div style="display: flex; align-items: center; gap: 0.4rem;">
+                        <span style="font-size: 1.25rem;">${asset.icon}</span>
+                        <strong style="color: #fff; font-size: 1rem; letter-spacing: -0.01em;">${asset.assetId}</strong>
+                        <span style="font-size: 0.72rem; padding: 0.15rem 0.45rem; border-radius: 4px; background: rgba(255,255,255,0.06); color: var(--text-muted); font-family: var(--font-mono);">${asset.category}</span>
+                      </div>
+                      <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">${asset.name}</div>
                     </div>
-                    <span class="stat-metric-pill ${isNeutral ? 'pill-neutral' : (isUp ? 'pill-bullish' : 'pill-bearish')}">
-                      ${isUp ? '+' : ''}${asset.expectedShiftPct}%
-                    </span>
+                    <div style="text-align: right;">
+                      <span class="stat-metric-pill ${isNeutral ? 'pill-neutral' : (isUp ? 'pill-bullish' : 'pill-bearish')}" style="font-weight: 800;">
+                        ${isUp ? '+' : ''}${asset.expectedShiftPct}%
+                      </span>
+                      <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem; font-family: var(--font-mono);">
+                        $${Number(asset.currentPrice).toFixed(2)} → <b style="color: #fff;">$${Number(asset.projectedPrice).toFixed(2)}</b>
+                      </div>
+                    </div>
                   </div>
 
-                  <!-- Sparkline Chart -->
-                  <div>
-                    <svg class="sparkline-svg" viewBox="0 0 240 60">
-                      <polyline fill="none" stroke="${strokeColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="${points}" />
+                  <!-- Real-World Candlestick / Grid Chart Frame -->
+                  <div class="candlestick-wrapper">
+                    <div class="candle-hover-overlay">
+                      <span>O: <b>$${Number(lastCandle.open).toFixed(2)}</b></span>
+                      <span>H: <b style="color: #34d399;">$${Number(lastCandle.high).toFixed(2)}</b></span>
+                      <span>L: <b style="color: #fb7185;">$${Number(lastCandle.low).toFixed(2)}</b></span>
+                      <span>C: <b style="color: ${lastCandle.close >= lastCandle.open ? '#34d399' : '#fb7185'};">$${Number(lastCandle.close).toFixed(2)}</b></span>
+                    </div>
+
+                    <svg class="candlestick-svg" viewBox="0 0 ${svgW} ${svgH}">
+                      <!-- Grid Lines (Horizontal) -->
+                      ${yTicks.map(tVal => {
+                        const yPos = getY(tVal);
+                        return `
+                          <line class="grid-line" x1="${padLeft}" y1="${yPos.toFixed(1)}" x2="${svgW - padRight}" y2="${yPos.toFixed(1)}" />
+                          <text x="${padLeft - 6}" y="${(yPos + 3).toFixed(1)}" text-anchor="end">$${tVal < 100 ? tVal.toFixed(1) : Math.round(tVal)}</text>
+                        `;
+                      }).join('')}
+
+                      <!-- Baseline T=0 Reference -->
+                      <line class="baseline-ref" x1="${padLeft}" y1="${basePriceY.toFixed(1)}" x2="${svgW - padRight}" y2="${basePriceY.toFixed(1)}" />
+
+                      <!-- Grid Lines & Ticks (Vertical Days) -->
+                      ${xTicks.map(xTick => {
+                        const xPos = getX(xTick.day, totalDays);
+                        return `
+                          <line class="grid-line" x1="${xPos.toFixed(1)}" y1="${padTop}" x2="${xPos.toFixed(1)}" y2="${padTop + plotH}" />
+                          <text x="${xPos.toFixed(1)}" y="${svgH - 8}" text-anchor="middle">${xTick.label}</text>
+                        `;
+                      }).join('')}
+
+                      <!-- Axes Borders -->
+                      <line class="axis-line" x1="${padLeft}" y1="${padTop}" x2="${padLeft}" y2="${padTop + plotH}" />
+                      <line class="axis-line" x1="${padLeft}" y1="${padTop + plotH}" x2="${svgW - padRight}" y2="${padTop + plotH}" />
+
+                      <!-- Candlestick / Band Visual Graphics -->
+                      ${chartInnerSvg}
                     </svg>
                   </div>
 
-                  <div style="display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.5rem;">
-                    <span>95% CI: <b style="color: #cbd5e1;">${asset.confidenceLower}% to ${asset.confidenceUpper}%</b></span>
-                    <span style="color: ${strokeColor}; font-weight: 700;">${asset.stance}</span>
+                  <!-- Footer: Confidence Range & Strategy Stance -->
+                  <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.6rem;">
+                    <span>95% Shock Band: <b style="color: #cbd5e1;">${asset.confidenceLower}% to ${asset.confidenceUpper}%</b></span>
+                    <span style="color: ${accentColor}; font-weight: 800;">${asset.stance}</span>
                   </div>
                 </div>
               `;
