@@ -3,74 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>The Decision Lab // Behavioral Economics Study</title>
+  <title>VERITAS Decision Lab // Behavioral Science & Predictive Analytics Institute</title>
+  <meta name="description" content="VERITAS Decision Lab integrates behavioral science, political analysis, statistical modeling, and predictive intelligence to transform complex human decision information into actionable insights." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
 </head>
 <body>
 
-  <!-- Top Navigation Bar -->
+  <!-- Institutional Top Header -->
   <header class="app-header">
     <div class="header-container">
       <div class="header-left">
-        <!-- Left Menu Bar Toggle Button -->
+        <!-- Left Menu Bar Toggle Button (Mobile & Direct Access) -->
         <button class="menu-toggle-btn" id="menuToggleBtn" onclick="window.toggleLeftMenu()" aria-label="Open Navigation Menu">
           <span class="menu-icon">☰</span>
           <span class="menu-text">Menu</span>
         </button>
 
-        <div class="brand" onclick="window.navigateToSection('survey')">
+        <!-- Brand Identity -->
+        <div class="brand" onclick="window.navigateToSection('home')" title="VERITAS Decision Lab Home">
           <span class="brand-badge">VERITAS</span>
           <div class="brand-title">Decision<span>Lab</span></div>
         </div>
+
+        <!-- Desktop Institutional Navigation -->
+        <nav class="header-nav-links" aria-label="Main Navigation">
+          <button class="nav-link-btn" id="navBtnHome" onclick="window.navigateToSection('home')">Overview</button>
+          <button class="nav-link-btn" id="navBtnDashboard" onclick="window.navigateToSection('dashboard')">Research Platform</button>
+          <button class="nav-link-btn" id="navBtnSurvey" onclick="window.navigateToSection('survey')">Decision Study</button>
+          <button class="nav-link-btn" id="navBtnMethodology" onclick="window.navigateToSection('methodology')">Methodology</button>
+          <button class="nav-link-btn" id="navBtnAbout" onclick="window.navigateToSection('about')">About</button>
+        </nav>
       </div>
 
-      <!-- Current Active Section Indicator -->
+      <!-- Current Active Section Indicator & Live System Status -->
       <div class="header-right">
-        <span class="current-section-badge" id="currentSectionBadge" onclick="window.toggleLeftMenu()" title="Click to open menu">
-          🧠 Study
+        <span class="header-status-pill">
+          <span class="live-dot"></span>
+          SYSTEM LIVE
+        </span>
+        <span class="current-section-badge" id="currentSectionBadge" onclick="window.toggleLeftMenu()" title="Click to open full menu">
+          🏛️ Overview
         </span>
       </div>
     </div>
   </header>
 
-  <!-- Left Sidebar Drawer (Only shows when clicked on) -->
+  <!-- Left Sidebar Drawer (Off-Canvas Navigation) -->
   <div class="menu-backdrop" id="menuBackdrop" onclick="window.closeLeftMenu()"></div>
   <aside class="sidebar-drawer" id="sidebarDrawer" aria-hidden="true">
     <div class="drawer-header">
       <div class="drawer-brand">
         <span class="brand-badge">VERITAS</span>
-        <div class="drawer-title">Navigation<span>Menu</span></div>
+        <div class="drawer-title">Decision<span>Lab</span></div>
       </div>
       <button class="drawer-close-btn" onclick="window.closeLeftMenu()" aria-label="Close menu">✕</button>
     </div>
 
     <div class="drawer-content">
-      <div class="drawer-nav-section-title">SECTIONS & RESEARCH MODULES</div>
+      <div class="drawer-nav-section-title">PLATFORM NAVIGATION</div>
 
       <nav class="drawer-nav">
-        <!-- 1. About the Project (Placed at the top) -->
-        <button class="drawer-nav-item" id="menuItemAbout" onclick="window.navigateToSection('about')">
-          <span class="drawer-nav-icon">💡</span>
+        <!-- 1. Home / Overview -->
+        <button class="drawer-nav-item" id="menuItemHome" onclick="window.navigateToSection('home')">
+          <span class="drawer-nav-icon">🏛️</span>
           <div class="drawer-nav-text">
-            <div class="drawer-nav-label">About the Project</div>
-            <div class="drawer-nav-sub">Founder, Mission & Architecture</div>
+            <div class="drawer-nav-label">Overview & Mission</div>
+            <div class="drawer-nav-sub">Institutional Portal & Research Scope</div>
           </div>
         </button>
 
-        <!-- 2. Behavioral Test Section -->
-        <button class="drawer-nav-item active" id="menuItemSurvey" onclick="window.navigateToSection('survey')">
+        <!-- 2. Integrated Research Dashboard -->
+        <button class="drawer-nav-item" id="menuItemDashboard" onclick="window.navigateToSection('dashboard')">
+          <span class="drawer-nav-icon">📑</span>
+          <div class="drawer-nav-text">
+            <div class="drawer-nav-label">Research Dashboard</div>
+            <div class="drawer-nav-sub">Unified Access to Analytical Tools</div>
+          </div>
+        </button>
+
+        <!-- 3. Behavioral Test Section -->
+        <button class="drawer-nav-item" id="menuItemSurvey" onclick="window.navigateToSection('survey')">
           <span class="drawer-nav-icon">🧠</span>
           <div class="drawer-nav-text">
-            <div class="drawer-nav-label">The Decision Lab</div>
-            <div class="drawer-nav-sub">7-Scenario Behavioral Economics Study</div>
+            <div class="drawer-nav-label">Decision Lab Experiment</div>
+            <div class="drawer-nav-sub">7-Scenario Empirical Study</div>
           </div>
         </button>
 
-        <!-- 3. Research Analytics Section -->
+        <!-- 4. Research Analytics Section (PIN-Gated) -->
         <button class="drawer-nav-item" id="menuItemAnalytics" onclick="window.navigateToSection('analytics')">
           <span class="drawer-nav-icon">📊</span>
           <div class="drawer-nav-text">
@@ -80,14 +104,32 @@
           <span class="drawer-lock-indicator" id="menuLockAnalytics">🔒</span>
         </button>
 
-        <!-- 4. Political Market Predictor Section -->
+        <!-- 5. Political Market Predictor Section (PIN-Gated) -->
         <button class="drawer-nav-item" id="menuItemMarket" onclick="window.navigateToSection('market')">
           <span class="drawer-nav-icon">⚡</span>
           <div class="drawer-nav-text">
             <div class="drawer-nav-label">Political Market Predictor</div>
-            <div class="drawer-nav-sub">News NLP & Monte Carlo Simulator</div>
+            <div class="drawer-nav-sub">NLP Sentiment & Monte Carlo Simulation</div>
           </div>
           <span class="drawer-lock-indicator" id="menuLockMarket">🔒</span>
+        </button>
+
+        <!-- 6. Methodology & Standards -->
+        <button class="drawer-nav-item" id="menuItemMethodology" onclick="window.navigateToSection('methodology')">
+          <span class="drawer-nav-icon">🔬</span>
+          <div class="drawer-nav-text">
+            <div class="drawer-nav-label">Research Methodology</div>
+            <div class="drawer-nav-sub">Statistical Rigor & Model Limitations</div>
+          </div>
+        </button>
+
+        <!-- 7. About VERITAS & Founder -->
+        <button class="drawer-nav-item" id="menuItemAbout" onclick="window.navigateToSection('about')">
+          <span class="drawer-nav-icon">💡</span>
+          <div class="drawer-nav-text">
+            <div class="drawer-nav-label">About VERITAS</div>
+            <div class="drawer-nav-sub">Leadership, Philosophy & Architecture</div>
+          </div>
         </button>
       </nav>
     </div>
@@ -99,7 +141,7 @@
           <span class="status-label" id="drawerStatusLabel">Researcher PIN: Locked</span>
         </div>
         <button class="btn-drawer-auth" id="drawerAuthBtn" onclick="window.drawerAuthAction()">
-          Unlock Access (1661) →
+          Unlock Access →
         </button>
       </div>
     </div>
@@ -108,9 +150,65 @@
   <!-- Main Viewport Container -->
   <main class="main-content" id="mainApp">
     <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
-      <p style="font-family: var(--font-mono); font-size: 0.95rem;">Loading The Decision Lab...</p>
+      <p style="font-family: var(--font-mono); font-size: 0.95rem;">Initializing VERITAS Decision Lab Platform...</p>
     </div>
   </main>
+
+  <!-- Global Institutional Footer -->
+  <footer class="v-site-footer" id="siteFooter">
+    <div class="v-footer-inner">
+      <div class="v-footer-top">
+        <div>
+          <div class="drawer-brand" style="margin-bottom: 0.85rem;">
+            <span class="brand-badge">VERITAS</span>
+            <div class="drawer-title" style="color: #ffffff;">Decision<span>Lab</span></div>
+          </div>
+          <p class="v-footer-brand-p">
+            Advancing decision science through the synthesis of behavioral psychology, econometric modeling, political risk analysis, and empirical simulation.
+          </p>
+        </div>
+
+        <div class="v-footer-col">
+          <h5>Platform</h5>
+          <ul>
+            <li><a onclick="window.navigateToSection('home')">Overview</a></li>
+            <li><a onclick="window.navigateToSection('dashboard')">Research Platform</a></li>
+            <li><a onclick="window.navigateToSection('survey')">Decision Study</a></li>
+            <li><a onclick="window.navigateToSection('market')">Market Predictor</a></li>
+          </ul>
+        </div>
+
+        <div class="v-footer-col">
+          <h5>Methodology</h5>
+          <ul>
+            <li><a onclick="window.navigateToSection('methodology')">Statistical Framework</a></li>
+            <li><a onclick="window.navigateToSection('analytics')">Aggregate Analytics</a></li>
+            <li><a onclick="window.navigateToSection('about')">Data Ethics</a></li>
+          </ul>
+        </div>
+
+        <div class="v-footer-col">
+          <h5>Institution</h5>
+          <ul>
+            <li><a onclick="window.navigateToSection('about')">About VERITAS</a></li>
+            <li><a onclick="window.navigateToSection('about')">Founder & Mission</a></li>
+            <li><a href="https://www.veritasdecisionlab.com" target="_blank" rel="noopener">Official Domain</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="v-footer-bottom">
+        <div>
+          © 2026 VERITAS Decision Lab. Independent Research & Decision-Intelligence Initiative.
+        </div>
+        <div>
+          <a onclick="window.navigateToSection('methodology')">Model Limitations</a>
+          <a onclick="window.navigateToSection('about')">Research Ethics</a>
+          <a onclick="window.navigateToSection('home')">Top ↑</a>
+        </div>
+      </div>
+    </div>
+  </footer>
 
   <!-- Toast Notification Container -->
   <div class="toast-container" id="toastContainer"></div>

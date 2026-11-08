@@ -1,42 +1,44 @@
 :root {
-  /* Crisp Editorial White Background & Deep Black Typography */
-  --bg-primary: #ffffff;          /* Pure Crisp White */
-  --bg-secondary: #f8fafc;        /* Soft Off-White / Light Slate */
-  --bg-card: #ffffff;             /* Crisp Card Surface */
-  --bg-card-hover: #f8fafc;
-  --bg-surface: #f1f5f9;          /* Neutral Soft Gray Surface */
+  /* Institutional Foundation & Surface Palette */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-surface: #f1f5f9;
+  --bg-navy: #0f172a;
+  --bg-navy-light: #1e293b;
+  --bg-navy-dark: #0a0f1d;
   
-  /* Black & Charcoal Accent Tones (Swapped from Cream) */
-  --cream-pure: #09090b;          /* Rich Deep Black */
-  --cream-light: #18181b;         /* Charcoal */
-  --cream-medium: #27272a;        /* Deep Slate */
-  --cream-dark: #52525b;          /* Muted Slate / Steel */
-  --cream-subtle: rgba(0, 0, 0, 0.04); /* Subtle frosted shadow */
-
-  --border-color: #e2e8f0;        /* Clean Neutral Border */
+  /* Border & Separation System */
+  --border-color: #e2e8f0;
   --border-subtle: #f1f5f9;
   --border-highlight: #cbd5e1;
+  --border-navy: #1e293b;
   
-  /* High Readability Typography (Swapped to Black Lettering) */
-  --text-main: #09090b;           /* Deep Black Headings & High Contrast */
-  --text-body: #1e293b;           /* High-contrast Charcoal Body */
+  /* High Contrast Institutional Typography */
+  --text-main: #0f172a;           /* Deep Obsidian Navy */
+  --text-body: #334155;           /* Rich Charcoal Slate */
   --text-muted: #64748b;          /* Balanced Neutral Slate */
-  --text-dim: #94a3b8;            /* Neutral Subtle Slate */
+  --text-dim: #94a3b8;            /* Subtle Supporting Slate */
   
-  /* Institutional Accents */
-  --accent-primary: #09090b;      /* Solid Deep Black Primary CTA */
-  --accent-primary-text: #ffffff; /* Crisp White on Black CTA */
-  --accent-primary-hover: #27272a;
-  --accent-emerald: #059669;
-  --accent-rose: #e11d48;
-  --accent-amber: #d97706;
+  /* Institutional Accent Hierarchy */
+  --accent-primary: #0f172a;      /* Primary Navy CTA */
+  --accent-primary-text: #ffffff;
+  --accent-primary-hover: #1e293b;
+  --accent-blue: #0284c7;         /* Analytical Cobalt */
   --accent-cyan: #0284c7;
-  --accent-violet: #7c3aed;
+  --accent-emerald: #059669;      /* Empirical Green */
+  --accent-rose: #e11d48;         /* Risk Crimson */
+  --accent-amber: #d97706;        /* Caution Gold */
+  --accent-violet: #6366f1;       /* Theoretical Indigo */
 
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
-  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.04);
+  /* Shadows & Elevation */
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-card: 0 4px 20px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+  --shadow-subtle: 0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 16px 40px -8px rgba(15, 23, 42, 0.12), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
 
-  /* Professional Typography Hierarchy */
+  /* Typography */
   --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -1783,4 +1785,587 @@ table.data-table td {
 @keyframes slideIn {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
+}
+
+
+/* ============================================================
+   VERITAS INSTITUTIONAL DESIGN SYSTEM & REDESIGN ADDITIONS
+   ============================================================ */
+
+/* Expanded Container Widths */
+.header-container {
+  max-width: 1240px !important;
+}
+
+main.main-content.wide {
+  max-width: 1240px;
+}
+
+main.main-content.flush {
+  padding-left: 0;
+  padding-right: 0;
+  max-width: 100%;
+}
+
+/* Institutional Navigation Bar */
+.header-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-link-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+}
+
+.nav-link-btn:hover {
+  background: var(--bg-surface);
+  color: var(--text-main);
+}
+
+.nav-link-btn.active {
+  background: #f1f5f9;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.header-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.header-status-pill .live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  display: inline-block;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+@media (max-width: 860px) {
+  .header-nav-links {
+    display: none;
+  }
+}
+
+/* ============================================================
+   HOMEPAGE HERO & INSTITUTIONAL SECTIONS
+   ============================================================ */
+.v-hero-section {
+  position: relative;
+  padding: 4.5rem 1.5rem 4rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+  overflow: hidden;
+}
+
+.v-hero-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.v-institution-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-main);
+  margin-bottom: 1.75rem;
+  text-transform: uppercase;
+}
+
+.v-institution-pill .pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0284c7;
+}
+
+.v-hero-headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5.2vw, 3.75rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  color: #0f172a;
+  margin-bottom: 1.4rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.v-hero-substatement {
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.65;
+  color: #475569;
+  max-width: 760px;
+  margin: 0 auto 2.25rem;
+  font-weight: 400;
+}
+
+.v-hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.v-hero-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  max-width: 860px;
+  margin: 0 auto;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.v-stat-block {
+  text-align: center;
+}
+
+.v-stat-number {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.v-stat-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.2rem;
+}
+
+@media (max-width: 680px) {
+  .v-hero-stats-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Institutional Content Sections */
+.v-section-container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 4.5rem 1.5rem;
+}
+
+.v-section-header {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 3.25rem;
+}
+
+.v-section-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0284c7;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.v-section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 3.5vw, 2.45rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #0f172a;
+  margin-bottom: 0.85rem;
+}
+
+.v-section-desc {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* Research Areas Grid */
+.v-research-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .v-research-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.v-research-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 2rem 1.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.v-research-card:hover {
+  border-color: var(--border-highlight);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-2px);
+}
+
+.v-card-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.v-card-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.015em;
+}
+
+.v-card-body {
+  font-size: 0.94rem;
+  color: #475569;
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+  flex: 1;
+}
+
+.v-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.v-tag {
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+/* Integrated Dashboard Hub Cards */
+.v-dashboard-hub {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+@media (max-width: 980px) {
+  .v-dashboard-hub {
+    grid-template-columns: 1fr;
+  }
+}
+
+.v-module-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.v-module-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: #cbd5e1;
+}
+
+.v-module-card-header {
+  padding: 1.75rem 1.75rem 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.v-module-badge {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.v-module-badge.open {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.v-module-badge.restricted {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.v-module-card-body {
+  padding: 1.75rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.v-module-name {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.v-module-desc {
+  font-size: 0.93rem;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 1.4rem;
+}
+
+.v-capability-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  font-size: 0.88rem;
+  color: #334155;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.v-capability-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  line-height: 1.45;
+}
+
+.v-capability-list li::before {
+  content: ✓;
+  color: #0284c7;
+  font-weight: 800;
+}
+
+.v-module-footer {
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Methodological Framework Grid */
+.v-methodology-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .v-methodology-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.v-method-box {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.v-method-box h4 {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.v-method-box p {
+  font-size: 0.92rem;
+  color: #475569;
+  line-height: 1.7;
+}
+
+/* Institutional Footer */
+footer.v-site-footer {
+  background: #0f172a;
+  color: #94a3b8;
+  border-top: 1px solid #1e293b;
+  padding: 4rem 1.5rem 2.5rem;
+  margin-top: auto;
+}
+
+.v-footer-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.v-footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 2.5rem;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+@media (max-width: 900px) {
+  .v-footer-top {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .v-footer-top {
+    grid-template-columns: 1fr;
+  }
+}
+
+.v-footer-brand-title {
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+
+.v-footer-brand-p {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: #94a3b8;
+  max-width: 360px;
+}
+
+.v-footer-col h5 {
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.v-footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.v-footer-col a {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.88rem;
+  transition: color 0.15s;
+  cursor: pointer;
+}
+
+.v-footer-col a:hover {
+  color: #ffffff;
+}
+
+.v-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 2rem;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.v-footer-bottom a {
+  color: #94a3b8;
+  text-decoration: none;
+  margin-left: 1rem;
+}
+
+.v-footer-bottom a:hover {
+  color: #ffffff;
+}
+
+/* Modal Dialogs Upgrade */
+.modal-overlay {
+  background: rgba(15, 23, 42, 0.65) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.modal-content {
+  border-radius: 20px !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25) !important;
 }

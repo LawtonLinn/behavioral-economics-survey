@@ -4,7 +4,7 @@ import { ASSETS, analyzePoliticalText, simulateMarketResponse } from './market-p
 
 // Application State
 const state = {
-  mode: 'survey', // 'survey' | 'analytics' | 'market'
+  mode: 'home', // 'home' | 'dashboard' | 'survey' | 'analytics' | 'market' | 'methodology' | 'about'
   sessionId: null,
   cohort: null, // 'Alpha' (Gain/High) | 'Beta' (Loss/Low)
   currentStepIndex: 0,
@@ -388,10 +388,10 @@ window.closeLeftMenu = () => {
   }
 };
 
-// Section Navigation Handler from Menu Bar
+// Section Navigation Handler from Menu Bar & Header
 window.navigateToSection = (targetMode) => {
   window.closeLeftMenu();
-  if (targetMode === 'survey' || targetMode === 'about') {
+  if (targetMode === 'home' || targetMode === 'dashboard' || targetMode === 'survey' || targetMode === 'methodology' || targetMode === 'about') {
     window.switchMode(targetMode);
     return;
   }
@@ -402,15 +402,43 @@ window.navigateToSection = (targetMode) => {
   window.switchMode(targetMode);
 };
 
+window.startStudy = () => {
+  state.currentStepIndex = 1;
+  telemetry.startStep(STEPS[1].id);
+  window.switchMode('survey');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.resetSurvey = () => {
+  state.currentStepIndex = 0;
+  state.isSubmitted = false;
+  state.personalMetrics = null;
+  state.responses = {
+    framing_job_choice: null,
+    anchoring_valuation_estimate: null,
+    framing_discount_choice: null,
+    loss_aversion_gambles: [null, null, null, null, null],
+    loss_aversion_sunk_choice: null,
+    delay_growth_estimate: null,
+    real_option_choice: null,
+    option_switch_threshold: 15000,
+    confidence_rating: 4
+  };
+  telemetry.startStep(STEPS[0].id);
+  window.switchMode('survey');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast('Study reset to start.');
+};
+
 window.drawerAuthAction = () => {
   if (state.isAdmin) {
     state.isAdmin = false;
     state.adminPin = '';
     sessionStorage.removeItem('veritas_admin_pin');
-    showToast('Researcher mode locked.');
+    showToast('Researcher session locked.');
     updateMenuState();
-    if (state.mode !== 'survey') {
-      window.switchMode('survey');
+    if (state.mode === 'analytics' || state.mode === 'market') {
+      window.switchMode('dashboard');
     }
   } else {
     window.closeLeftMenu();
@@ -420,14 +448,30 @@ window.drawerAuthAction = () => {
 
 function updateMenuState() {
   // Update Active Item in Drawer
-  const itemSurvey = document.getElementById('menuItemSurvey');
-  const itemAnalytics = document.getElementById('menuItemAnalytics');
-  const itemMarket = document.getElementById('menuItemMarket');
-  const itemAbout = document.getElementById('menuItemAbout');
-  if (itemSurvey) itemSurvey.classList.toggle('active', state.mode === 'survey');
-  if (itemAnalytics) itemAnalytics.classList.toggle('active', state.mode === 'analytics');
-  if (itemMarket) itemMarket.classList.toggle('active', state.mode === 'market');
-  if (itemAbout) itemAbout.classList.toggle('active', state.mode === 'about');
+  const items = {
+    home: document.getElementById('menuItemHome'),
+    dashboard: document.getElementById('menuItemDashboard'),
+    survey: document.getElementById('menuItemSurvey'),
+    analytics: document.getElementById('menuItemAnalytics'),
+    market: document.getElementById('menuItemMarket'),
+    methodology: document.getElementById('menuItemMethodology'),
+    about: document.getElementById('menuItemAbout')
+  };
+  for (const [key, el] of Object.entries(items)) {
+    if (el) el.classList.toggle('active', state.mode === key);
+  }
+
+  // Update Desktop Header Nav Buttons
+  const navBtns = {
+    home: document.getElementById('navBtnHome'),
+    dashboard: document.getElementById('navBtnDashboard'),
+    survey: document.getElementById('navBtnSurvey'),
+    methodology: document.getElementById('navBtnMethodology'),
+    about: document.getElementById('navBtnAbout')
+  };
+  for (const [key, el] of Object.entries(navBtns)) {
+    if (el) el.classList.toggle('active', state.mode === key);
+  }
 
   // Update Lock Indicators in Drawer
   const lockAnalytics = document.getElementById('menuLockAnalytics');
@@ -452,21 +496,22 @@ function updateMenuState() {
     statusLabel.innerText = state.isAdmin ? 'Researcher Access: Unlocked' : 'Researcher Access: Locked';
   }
   if (authBtn) {
-    authBtn.innerText = state.isAdmin ? '🔒 Lock Access' : 'Unlock Access (1661) →';
+    authBtn.innerText = state.isAdmin ? '🔒 Lock Session' : 'Unlock Access →';
   }
 
   // Update Top Header Current Section Badge
   const badge = document.getElementById('currentSectionBadge');
   if (badge) {
-    if (state.mode === 'survey') {
-      badge.innerHTML = `🧠 Study`;
-    } else if (state.mode === 'analytics') {
-      badge.innerHTML = `📊 Research`;
-    } else if (state.mode === 'market') {
-      badge.innerHTML = `⚡ Market Predictor`;
-    } else if (state.mode === 'about') {
-      badge.innerHTML = `💡 About the Project`;
-    }
+    const badgeMap = {
+      home: '🏛️ Overview',
+      dashboard: '📑 Platform',
+      survey: '🧠 Study',
+      analytics: '📊 Analytics',
+      market: '⚡ Market Predictor',
+      methodology: '🔬 Methodology',
+      about: '💡 About'
+    };
+    badge.innerHTML = badgeMap[state.mode] || '🏛️ Overview';
   }
 
   updateAdminButton();
@@ -475,11 +520,7 @@ function updateMenuState() {
 // Admin Password Gate
 window.promptAdminLogin = (targetMode = 'analytics') => {
   if (state.isAdmin) {
-    if (state.mode === targetMode) {
-      window.switchMode('survey');
-    } else {
-      window.switchMode(targetMode);
-    }
+    window.switchMode(targetMode);
     return;
   }
 
@@ -489,14 +530,14 @@ window.promptAdminLogin = (targetMode = 'analytics') => {
   modal.id = 'pinModal';
   const title = targetMode === 'market' ? 'Political Market Simulator' : 'Researcher Access';
   const desc = targetMode === 'market' 
-    ? 'Enter access code <b>1661</b> to unlock the quantitative political estimation model:' 
-    : 'Enter your secret Admin PIN (1661) to view aggregate responses and analytics:';
+    ? 'Enter authorization credentials to unlock the quantitative political estimation model:' 
+    : 'Enter researcher credentials to access private aggregate response distributions:';
 
   modal.innerHTML = `
-    <div class="modal-content" style="max-width: 400px; text-align: center;">
+    <div class="modal-content" style="max-width: 420px; text-align: center;">
       <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">${targetMode === 'market' ? '⚡' : '🔒'}</div>
       <h3 style="color: var(--text-main); font-size: 1.35rem; font-weight: 800; margin-bottom: 0.4rem;">${title}</h3>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5;">
         ${desc}
       </p>
 
@@ -511,7 +552,7 @@ window.promptAdminLogin = (targetMode = 'analytics') => {
           Cancel
         </button>
         <button class="btn-primary" style="flex: 1; justify-content: center;" onclick="window.submitAdminPin('${targetMode}')">
-          Unlock →
+          Verify Access →
         </button>
       </div>
     </div>
@@ -546,11 +587,11 @@ window.submitAdminPin = async (targetMode = 'analytics') => {
       state.adminPin = pin;
       sessionStorage.setItem('veritas_admin_pin', pin);
       document.getElementById('pinModal')?.remove();
-      showToast(targetMode === 'market' ? 'Unlocked Market Predictor!' : 'Unlocked Researcher Dashboard!');
+      showToast(targetMode === 'market' ? 'Unlocked Market Predictor!' : 'Unlocked Researcher Analytics!');
       window.switchMode(targetMode);
     } else {
       input.style.borderColor = '#f43f5e';
-      showToast('Incorrect PIN. Access Denied.');
+      showToast('Incorrect credentials. Access denied.');
     }
   } catch (err) {
     showToast('Connection error.');
@@ -565,38 +606,456 @@ window.switchMode = (mode) => {
   state.mode = mode;
   updateMenuState();
   render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 function render() {
   const container = document.getElementById('mainApp');
   if (!container) return;
 
-  if (state.mode === 'analytics') {
+  // Adjust container width classes based on active view
+  if (state.mode === 'home') {
+    container.className = 'main-content flush';
+    renderHomeView(container);
+  } else if (state.mode === 'dashboard') {
+    container.className = 'main-content wide';
+    renderDashboardHub(container);
+  } else if (state.mode === 'analytics') {
+    container.className = 'main-content wide';
     renderAnalyticsPortal(container);
   } else if (state.mode === 'market') {
+    container.className = 'main-content wide';
     renderMarketPredictorView(container);
+  } else if (state.mode === 'methodology') {
+    container.className = 'main-content wide';
+    renderMethodologyView(container);
   } else if (state.mode === 'about') {
+    container.className = 'main-content';
     renderAboutView(container);
   } else {
+    container.className = 'main-content';
     renderSurveyView(container);
   }
 }
 
 // -------------------------------------------------------------
-// ABOUT THE PROJECT VIEW
+// 1. HOMEPAGE VIEW (INSTITUTIONAL OVERVIEW)
+// -------------------------------------------------------------
+function renderHomeView(container) {
+  container.innerHTML = `
+    <!-- Hero Section -->
+    <section class="v-hero-section">
+      <div class="v-hero-inner">
+        <div class="v-institution-pill">
+          <span class="pill-dot"></span>
+          Behavioral Science & Predictive Analytics Institute
+        </div>
+
+        <h1 class="v-hero-headline">
+          Advancing Research. Understanding Behavior. Informing Decisions.
+        </h1>
+
+        <p class="v-hero-substatement">
+          VERITAS Decision Lab integrates behavioral science, political analysis, statistical modeling, and predictive intelligence to transform complex information into meaningful, actionable insights.
+        </p>
+
+        <div class="v-hero-actions">
+          <button class="btn-primary" style="padding: 0.95rem 2.2rem; font-size: 1rem;" onclick="window.navigateToSection('dashboard')">
+            Explore Research Platform →
+          </button>
+          <button class="btn-secondary" style="padding: 0.95rem 1.8rem; font-size: 1rem;" onclick="window.startStudy()">
+            Participate in Decision Study
+          </button>
+        </div>
+
+        <!-- Institutional Metric Strip -->
+        <div class="v-hero-stats-strip">
+          <div class="v-stat-block">
+            <div class="v-stat-number">4</div>
+            <div class="v-stat-label">Core Research Pillars</div>
+          </div>
+          <div class="v-stat-block">
+            <div class="v-stat-number">7</div>
+            <div class="v-stat-label">Empirical Decision Scenarios</div>
+          </div>
+          <div class="v-stat-block">
+            <div class="v-stat-number">10</div>
+            <div class="v-stat-label">Tracked Asset Classes</div>
+          </div>
+          <div class="v-stat-block">
+            <div class="v-stat-number">100%</div>
+            <div class="v-stat-label">Transparent Methodology</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 1: Research Areas Grid -->
+    <section class="v-section-container">
+      <div class="v-section-header">
+        <span class="v-section-kicker">Empirical Focus</span>
+        <h2 class="v-section-title">Primary Research Disciplines</h2>
+        <p class="v-section-desc">
+          Our investigative work spans cognitive psychology, computational NLP, econometric time-series, and microeconomic choice under uncertainty.
+        </p>
+      </div>
+
+      <div class="v-research-grid">
+        <!-- Area 1 -->
+        <div class="v-research-card">
+          <div class="v-card-icon-wrap">🧠</div>
+          <h3 class="v-card-title">Behavioral Economics & Prospect Theory</h3>
+          <p class="v-card-body">
+            Empirical investigation of cognitive biases, reference dependence, framing effects (Tversky & Kahneman), loss aversion parameter estimation (λ), and numerical anchoring in valuation tasks.
+          </p>
+          <div class="v-card-tags">
+            <span class="v-tag">Framing Effects</span>
+            <span class="v-tag">Loss Aversion λ</span>
+            <span class="v-tag">Anchoring Bias</span>
+          </div>
+          <button class="btn-secondary" style="font-size: 0.85rem; width: 100%;" onclick="window.navigateToSection('survey')">
+            View Behavioral Modules →
+          </button>
+        </div>
+
+        <!-- Area 2 -->
+        <div class="v-research-card">
+          <div class="v-card-icon-wrap">⚡</div>
+          <h3 class="v-card-title">Political Analysis & Policy Sensitivity</h3>
+          <p class="v-card-body">
+            Multi-factor natural language processing to categorize legislative, geopolitical, and monetary policy news across structured policy domains and quantify asset class sensitivity.
+          </p>
+          <div class="v-card-tags">
+            <span class="v-tag">NLP Classification</span>
+            <span class="v-tag">Policy Shocks</span>
+            <span class="v-tag">Sentiment Scoring</span>
+          </div>
+          <button class="btn-secondary" style="font-size: 0.85rem; width: 100%;" onclick="window.navigateToSection('market')">
+            Launch Policy Predictor →
+          </button>
+        </div>
+
+        <!-- Area 3 -->
+        <div class="v-research-card">
+          <div class="v-card-icon-wrap">📈</div>
+          <h3 class="v-card-title">Statistical Modeling & Decision Intelligence</h3>
+          <p class="v-card-body">
+            Chi-Square test of independence (2x2 contingency tables), Geometric Brownian Motion Monte Carlo trajectories, compounding growth biases, and real option evaluation under volatility.
+          </p>
+          <div class="v-card-tags">
+            <span class="v-tag">Monte Carlo Engine</span>
+            <span class="v-tag">Chi-Square Test</span>
+            <span class="v-tag">Real Options</span>
+          </div>
+          <button class="btn-secondary" style="font-size: 0.85rem; width: 100%;" onclick="window.navigateToSection('methodology')">
+            Inspect Methodology →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Platform Callout Banner -->
+    <section style="background: var(--bg-navy); color: #ffffff; padding: 4.5rem 1.5rem; border-top: 1px solid var(--border-navy); border-bottom: 1px solid var(--border-navy);">
+      <div style="max-width: 1040px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 2rem;">
+        <div style="max-width: 640px;">
+          <span style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; color: #38bdf8; text-transform: uppercase; margin-bottom: 0.5rem; display: block;">
+            Integrated Research Platform
+          </span>
+          <h2 style="font-family: var(--font-display); font-size: 2.2rem; font-weight: 800; color: #ffffff; letter-spacing: -0.02em; margin-bottom: 0.85rem;">
+            Unified Decision-Intelligence Dashboard
+          </h2>
+          <p style="color: #94a3b8; font-size: 1.05rem; line-height: 1.65;">
+            Explore all analytical tools, live behavioral synthesis charts, predictive simulation engines, and exportable datasets in one integrated environment.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn-primary" style="background: #ffffff; color: #0f172a; border-color: #ffffff; font-weight: 800;" onclick="window.navigateToSection('dashboard')">
+            Launch Platform Hub →
+          </button>
+          <button class="btn-secondary" style="background: rgba(255,255,255,0.08); color: #ffffff; border-color: rgba(255,255,255,0.2);" onclick="window.navigateToSection('methodology')">
+            Review Framework
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Institutional Philosophy & Mission -->
+    <section class="v-section-container">
+      <div class="v-section-header">
+        <span class="v-section-kicker">Institutional Tenets</span>
+        <h2 class="v-section-title">The VERITAS Research Philosophy</h2>
+        <p class="v-section-desc">
+          Traditional neoclassical economics assumes frictionless markets and hyper-rational actors. VERITAS bridges the gap between theoretical models and real human behavior.
+        </p>
+      </div>
+
+      <div class="v-methodology-grid">
+        <div class="v-method-box">
+          <h4><span>🔬</span> Empirical Over Theoretical</h4>
+          <p>
+            We prioritize observed decision telemetry, reaction latency, and choice distributions over idealized assumptions of mathematical equilibrium. Data reveals how individuals make consequential choices under pressure.
+          </p>
+        </div>
+
+        <div class="v-method-box">
+          <h4><span>⚖️</span> Methodological Transparency</h4>
+          <p>
+            Every analytical formula — from our Fisher-Yates randomized cohort assignment to Chi-Square Yates correction and Monte Carlo drift parameters — is open, documented, and reproducible.
+          </p>
+        </div>
+
+        <div class="v-method-box">
+          <h4><span>🎯</span> Quantitative Multi-Factor Synthesis</h4>
+          <p>
+            Decision intelligence requires multi-disciplinary lenses. We intersect psychometric loss parameters with macroeconomic asset betas and stochastic simulation to contextualize uncertainty.
+          </p>
+        </div>
+
+        <div class="v-method-box">
+          <h4><span>🔒</span> Absolute Privacy & Anonymity</h4>
+          <p>
+            Participant data is completely stripped of personally identifiable information. We collect zero tracking cookies, store no biometric metadata, and use private server infrastructure.
+          </p>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+// -------------------------------------------------------------
+// 2. RESEARCH DASHBOARD HUB VIEW
+// -------------------------------------------------------------
+function renderDashboardHub(container) {
+  container.innerHTML = `
+    <div style="margin-bottom: 2.5rem;">
+      <span class="v-section-kicker">Unified Analytics Platform</span>
+      <h1 class="v-section-title">VERITAS Research Dashboard</h1>
+      <p class="v-section-desc" style="max-width: 800px;">
+        Centralized operational hub connecting all empirical study modules, statistical evaluation engines, and predictive market simulations across the VERITAS ecosystem.
+      </p>
+    </div>
+
+    <!-- Active Modules Grid -->
+    <div class="v-dashboard-hub">
+      <!-- Module 1: Behavioral Study -->
+      <div class="v-module-card">
+        <div class="v-module-card-header">
+          <div>
+            <div style="font-size: 1.8rem; margin-bottom: 0.4rem;">🧠</div>
+            <span class="v-module-badge open">Operational · Public</span>
+          </div>
+        </div>
+        <div class="v-module-card-body">
+          <h3 class="v-module-name">Behavioral Decision Lab</h3>
+          <p class="v-module-desc">
+            Empirical 7-scenario cognitive experiment capturing participant choices across randomized gain/loss frames, numerical anchors, and intertemporal trade-offs.
+          </p>
+          <ul class="v-capability-list">
+            <li>Tversky & Kahneman Framing Divergence</li>
+            <li>Real-time telemetry and reaction dwell timing</li>
+            <li>Loss Aversion λ parameter estimation</li>
+            <li>Rule of 72 Exponential Growth Bias analysis</li>
+          </ul>
+          <div class="v-module-footer">
+            <span style="font-size: 0.8rem; font-weight: 700; color: #047857;">Active Study</span>
+            <button class="btn-primary" style="padding: 0.6rem 1.2rem; font-size: 0.88rem;" onclick="window.startStudy()">
+              Start Study →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 2: Research Analytics -->
+      <div class="v-module-card">
+        <div class="v-module-card-header">
+          <div>
+            <div style="font-size: 1.8rem; margin-bottom: 0.4rem;">📊</div>
+            <span class="v-module-badge ${state.isAdmin ? 'open' : 'restricted'}">
+              ${state.isAdmin ? 'Unlocked' : 'PIN Restricted'}
+            </span>
+          </div>
+        </div>
+        <div class="v-module-card-body">
+          <h3 class="v-module-name">Research Analytics Portal</h3>
+          <p class="v-module-desc">
+            Statistical synthesis dashboard displaying live participant distributions, contingency matrices, odds ratios, and econometric CSV/JSON datasets.
+          </p>
+          <ul class="v-capability-list">
+            <li>Chi-Square test of independence (with p-value)</li>
+            <li>Cohort Alpha vs Beta cross-tabulation</li>
+            <li>Empirical Lambda (λ) histogram distribution</li>
+            <li>Raw dataset export (CSV & JSON format)</li>
+          </ul>
+          <div class="v-module-footer">
+            <span style="font-size: 0.8rem; font-weight: 700; color: ${state.isAdmin ? '#047857' : '#b91c1c'};">
+              ${state.isAdmin ? 'Access Granted' : 'Researcher Auth'}
+            </span>
+            <button class="btn-secondary" style="padding: 0.6rem 1.2rem; font-size: 0.88rem;" onclick="window.navigateToSection('analytics')">
+              ${state.isAdmin ? 'Open Dashboard →' : 'Unlock Portal 🔒'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Module 3: Political Market Predictor -->
+      <div class="v-module-card">
+        <div class="v-module-card-header">
+          <div>
+            <div style="font-size: 1.8rem; margin-bottom: 0.4rem;">⚡</div>
+            <span class="v-module-badge ${state.isAdmin ? 'open' : 'restricted'}">
+              ${state.isAdmin ? 'Unlocked' : 'PIN Restricted'}
+            </span>
+          </div>
+        </div>
+        <div class="v-module-card-body">
+          <h3 class="v-module-name">Political Market Predictor</h3>
+          <p class="v-module-desc">
+            Natural language processing engine that parses policy breaking news, classifies regulatory shock vectors, and runs 30-day Monte Carlo price simulations.
+          </p>
+          <ul class="v-capability-list">
+            <li>Multi-domain policy dictionary classification</li>
+            <li>Asset beta matrix across 10 asset classes</li>
+            <li>Geometric Brownian Motion drift simulation</li>
+            <li>Interactive Candlestick & Volatility band charts</li>
+          </ul>
+          <div class="v-module-footer">
+            <span style="font-size: 0.8rem; font-weight: 700; color: ${state.isAdmin ? '#047857' : '#b91c1c'};">
+              ${state.isAdmin ? 'Access Granted' : 'Researcher Auth'}
+            </span>
+            <button class="btn-secondary" style="padding: 0.6rem 1.2rem; font-size: 0.88rem;" onclick="window.navigateToSection('market')">
+              ${state.isAdmin ? 'Launch Simulator →' : 'Unlock Simulator 🔒'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Overview Stats -->
+    <div style="margin-top: 3rem; padding: 2rem; background: #ffffff; border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.3rem;">
+            Methodological Standards & Data Governance
+          </h3>
+          <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 650px;">
+            VERITAS adheres to strict open research transparency. Review our econometric derivations, model limitations, and behavioral testing protocols.
+          </p>
+        </div>
+        <button class="btn-secondary" onclick="window.navigateToSection('methodology')">
+          View Methodology Document →
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// 3. RESEARCH METHODOLOGY & STANDARDS VIEW
+// -------------------------------------------------------------
+function renderMethodologyView(container) {
+  container.innerHTML = `
+    <div style="max-width: 900px; margin: 0 auto; animation: cardFadeIn 0.3s ease;">
+      <!-- Header -->
+      <div style="margin-bottom: 2.5rem; text-align: left;">
+        <span class="v-section-kicker">Methodological Transparency</span>
+        <h1 class="v-section-title" style="font-size: 2.4rem;">Research Methodology & Standards</h1>
+        <p class="v-section-desc">
+          Comprehensive documentation of the empirical protocols, statistical models, natural language classification engines, and known analytical limitations governing the VERITAS platform.
+        </p>
+      </div>
+
+      <!-- Section A: Behavioral Testing Framework -->
+      <div class="scenario-box" style="border-left-color: #0284c7; margin-bottom: 2rem; background: #ffffff;">
+        <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">
+          1. Behavioral Testing Framework & Randomized Cohorts
+        </h3>
+        <p style="color: var(--text-body); font-size: 0.95rem; line-height: 1.8; margin-bottom: 1rem;">
+          Participants entering the VERITAS Behavioral Decision Lab are automatically assigned to either <strong>Cohort Alpha</strong> or <strong>Cohort Beta</strong> using a balanced pseudo-random allocation procedure on the backend server.
+        </p>
+        <ul style="padding-left: 1.25rem; font-size: 0.93rem; color: var(--text-body); line-height: 1.75; margin-bottom: 1rem;">
+          <li><strong>Framing Scenario (Asian Disease paradigm adapted to employment):</strong> Cohort Alpha receives the <em>Gain Frame</em> ("Save 200 jobs for sure"), while Cohort Beta receives the <em>Loss Frame</em> ("400 people will lose their jobs for sure"). Both options represent identical mathematical expected value (200 saved, 400 lost).</li>
+          <li><strong>Numerical Anchoring Scenario:</strong> Valuation of residential real estate is tested against an arbitrary high anchor ($850,000) for Cohort Alpha versus a low anchor ($350,000) for Cohort Beta to isolate cognitive anchoring elasticity.</li>
+          <li><strong>Loss Aversion Series:</strong> A sequence of five 50/50 gambles with asymmetric gain/loss payoffs is presented to compute each participant\'s personal loss sensitivity coefficient (λ).</li>
+        </ul>
+        <p style="font-size: 0.88rem; color: var(--text-muted); font-style: italic;">
+          Mathematical Grounding: Tversky, A., & Kahneman, D. (1981). The framing of decisions and the psychology of choice. Science, 211(4481), 453-458.
+        </p>
+      </div>
+
+      <!-- Section B: Statistical Testing & Synthesis -->
+      <div class="scenario-box" style="border-left-color: #059669; margin-bottom: 2rem; background: #ffffff;">
+        <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">
+          2. Statistical Analysis & Significance Testing
+        </h3>
+        <p style="color: var(--text-body); font-size: 0.95rem; line-height: 1.8; margin-bottom: 1rem;">
+          To determine whether framing shifts produce statistically significant divergence between cohorts, VERITAS calculates a 2x2 contingency table Chi-Square statistic with Yates\' continuity correction:
+        </p>
+        <div style="background: var(--bg-surface); padding: 1rem 1.25rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.88rem; color: var(--text-main); margin-bottom: 1rem; border: 1px solid var(--border-color);">
+          χ² = N · (|ad - bc| - N/2)² / [(a + b)(c + d)(a + c)(b + d)]
+        </div>
+        <p style="color: var(--text-body); font-size: 0.95rem; line-height: 1.8;">
+          Associated p-values are computed from the cumulative chi-square distribution with 1 degree of freedom (df = 1). When p &lt; 0.05, the framing effect is confirmed with 95% statistical confidence.
+        </p>
+      </div>
+
+      <!-- Section C: Political Market Prediction Model -->
+      <div class="scenario-box" style="border-left-color: #d97706; margin-bottom: 2rem; background: #ffffff;">
+        <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">
+          3. Political Market NLP & Monte Carlo Simulation
+        </h3>
+        <p style="color: var(--text-body); font-size: 0.95rem; line-height: 1.8; margin-bottom: 1rem;">
+          The Political Market Predictor (PMP) implements a quantitative sentiment and regulatory classification matrix:
+        </p>
+        <ul style="padding-left: 1.25rem; font-size: 0.93rem; color: var(--text-body); line-height: 1.75; margin-bottom: 1rem;">
+          <li><strong>Domain Classification:</strong> Input policy text is scanned against curated lexical dictionaries covering Monetary Policy, Trade & Tariffs, Defense & Geopolitics, Energy & Climate, and Antitrust Regulation.</li>
+          <li><strong>Asset Beta Matrix:</strong> Historical sensitivity coefficients translate policy shock magnitudes into expected price trajectory deltas across 10 asset classes (SPY, QQQ, XLE, ICLN, ITA, XLF, TLT, GLD, UUP, BTC).</li>
+          <li><strong>Monte Carlo Drift Engine:</strong> Simulates daily price paths using Geometric Brownian Motion with stochastic drift (μ) and annualized volatility (σ).</li>
+        </ul>
+      </div>
+
+      <!-- Section D: Model Limitations & Academic Transparency -->
+      <div class="scenario-box" style="border-left-color: #e11d48; margin-bottom: 2.5rem; background: #ffffff;">
+        <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">
+          4. Model Limitations, Uncertainty & Scope
+        </h3>
+        <p style="color: var(--text-body); font-size: 0.95rem; line-height: 1.8; margin-bottom: 1rem;">
+          In accordance with institutional research integrity standards, VERITAS explicitly highlights the following analytical limitations:
+        </p>
+        <ul style="padding-left: 1.25rem; font-size: 0.93rem; color: var(--text-body); line-height: 1.75;">
+          <li><strong>Distinction Between Estimates and Predictions:</strong> PMP forecasts represent statistical simulations conditioned on keyword heuristics and historical sensitivity betas. They do not constitute financial advice or guaranteed market movements.</li>
+          <li><strong>Sample Composition:</strong> Web-based behavioral surveys are subject to volunteer self-selection bias and may not perfectly mirror broader demographic populations.</li>
+          <li><strong>Unmodeled External Factors:</strong> Exogenous geopolitical events, macro liquidity shifts, and algorithmic market microstructure can override modeled policy impacts.</li>
+        </ul>
+      </div>
+
+      <!-- Navigation CTAs -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+        <button class="btn-secondary" onclick="window.navigateToSection('dashboard')">
+          ← Back to Research Platform
+        </button>
+        <button class="btn-primary" onclick="window.startStudy()">
+          Participate in Decision Study →
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// -------------------------------------------------------------
+// 4. ABOUT VERITAS VIEW (ORGANIZATIONAL IDENTITY & LEADERSHIP)
 // -------------------------------------------------------------
 function renderAboutView(container) {
   container.innerHTML = `
-    <div class="survey-wrapper" style="max-width: 800px; animation: cardFadeIn 0.3s ease;">
+    <div class="survey-wrapper" style="max-width: 860px; animation: cardFadeIn 0.3s ease;">
       <div class="survey-card" style="margin-bottom: 1.75rem;">
-        <span class="badge-tag cyan">💡 Founder & Research Mission</span>
-        <h1 class="survey-title" style="font-size: 2.1rem; margin-bottom: 0.5rem;">About the Project</h1>
-        <p style="font-size: 1.05rem; color: var(--text-muted); margin-bottom: 1.5rem;">
-          Veritas Decision Lab — Bridging the gap between theoretical economic models and real human behavior.
+        <span class="v-section-kicker">Institutional Background</span>
+        <h1 class="survey-title" style="font-size: 2.2rem; margin-bottom: 0.5rem;">About VERITAS Decision Lab</h1>
+        <p style="font-size: 1.05rem; color: var(--text-muted); margin-bottom: 1.75rem;">
+          Advancing behavioral economics, political risk modeling, and decision intelligence through independent research.
         </p>
 
-        <!-- Section 1: About Lawton Linn -->
-        <div class="scenario-box" style="border-left-color: #0284c7; margin-bottom: 1.5rem;">
+        <!-- Section 1: The Founder & Mission -->
+        <div class="scenario-box" style="border-left-color: #0284c7; margin-bottom: 1.5rem; background: #ffffff;">
           <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.6rem;">
             👤 The Researcher & The Vision
           </h3>
@@ -609,9 +1068,9 @@ function renderAboutView(container) {
         </div>
 
         <!-- Section 2: Infrastructure & Ownership -->
-        <div class="scenario-box" style="border-left-color: #059669; margin-bottom: 1.5rem;">
+        <div class="scenario-box" style="border-left-color: #059669; margin-bottom: 1.5rem; background: #ffffff;">
           <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.6rem;">
-            🖥️ 100% Privately Owned Infrastructure
+            🖥️ Privately Owned & Managed Infrastructure
           </h3>
           <p style="color: var(--text-body); font-size: 0.98rem; line-height: 1.8; margin-bottom: 0.85rem;">
             The domain name you are currently visiting (<a href="https://www.veritasdecisionlab.com" style="color: var(--text-main); font-weight: 700; text-decoration: underline;">www.veritasdecisionlab.com</a>) is registered and owned exclusively by me. 
@@ -622,20 +1081,20 @@ function renderAboutView(container) {
         </div>
 
         <!-- Section 3: Development Philosophy & Open Source Attribution -->
-        <div class="scenario-box" style="border-left-color: #d97706; margin-bottom: 1.5rem;">
+        <div class="scenario-box" style="border-left-color: #d97706; margin-bottom: 1.5rem; background: #ffffff;">
           <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.6rem;">
-            🛠️ Development Philosophy & The Power of Open Source
+            🛠️ Development Philosophy & Academic Rigor
           </h3>
           <p style="color: var(--text-body); font-size: 0.98rem; line-height: 1.8; margin-bottom: 0.85rem;">
-            Engineering a full-stack platform of this scope — featuring real-time data persistence, telemetry capture, SVG visualization engines, and statistical modeling — requires a broad spectrum of technical disciplines. As a high school student, I don't possess decades of software engineering experience yet.
+            Engineering a full-stack platform of this scope — featuring real-time data persistence, telemetry capture, SVG visualization engines, and statistical modeling — requires a broad spectrum of technical disciplines. As a dedicated student researcher, I actively learn from the broader scientific and engineering community.
           </p>
           <p style="color: var(--text-body); font-size: 0.98rem; line-height: 1.8;">
-            To bridge those knowledge gaps, I actively learn from the broader engineering community. I study open-source templates, community tutorials, foundational papers by Kahneman & Tversky, and modern web standards. By combining self-taught development with open-source tools and rigorous economic theory, I am able to turn conceptual research ideas into working, accessible software.
+            I study foundational papers by Kahneman, Tversky, and Thaler alongside modern web standards and computational statistics. By combining rigorous economic theory with self-taught full-stack architecture, I aim to turn conceptual research ideas into accessible, empirical software.
           </p>
         </div>
 
         <!-- Section 4: Academic Integrity & Research Ethics -->
-        <div class="scenario-box" style="border-left-color: #7c3aed; margin-bottom: 2rem;">
+        <div class="scenario-box" style="border-left-color: #7c3aed; margin-bottom: 2rem; background: #ffffff;">
           <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.6rem;">
             🔒 Research Transparency & Data Ethics
           </h3>
@@ -646,10 +1105,10 @@ function renderAboutView(container) {
 
         <!-- Call to Action -->
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-          <button class="btn-secondary" onclick="window.toggleLeftMenu()">
-            ☰ Explore Navigation Menu
+          <button class="btn-secondary" onclick="window.navigateToSection('dashboard')">
+            ← Explore Research Platform
           </button>
-          <button class="btn-primary" onclick="window.navigateToSection('survey')">
+          <button class="btn-primary" onclick="window.startStudy()">
             Take The Decision Lab Study →
           </button>
         </div>
@@ -657,7 +1116,6 @@ function renderAboutView(container) {
     </div>
   `;
 }
-
 // -------------------------------------------------------------
 // USER-FRIENDLY SURVEY VIEWS
 // -------------------------------------------------------------
@@ -1240,11 +1698,19 @@ function renderSurveyView(container) {
 
         <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.75rem; text-align: center;">
           <h3 style="color: var(--text-main); font-size: 1.25rem; font-weight: 800; margin-bottom: 0.4rem;">
-            Thank you for taking the survey! 🙌
+            Thank you for contributing to the research! 🎓
           </h3>
-          <p style="font-size: 0.95rem; color: var(--text-body); max-width: 500px; margin: 0 auto;">
-            Your anonymous responses have been successfully recorded for the research study.
+          <p style="font-size: 0.95rem; color: var(--text-body); max-width: 560px; margin: 0 auto 1.25rem; line-height: 1.6;">
+            Your anonymous responses have been successfully committed to the research database and synthesized into our aggregate cross-sectional dataset.
           </p>
+          <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+            <button class="btn-secondary" style="font-size: 0.88rem;" onclick="window.navigateToSection('dashboard')">
+              ← Return to Research Platform
+            </button>
+            <button class="btn-secondary" style="font-size: 0.88rem;" onclick="window.resetSurvey()">
+              ↺ Retake Study
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -2089,7 +2555,7 @@ function renderMarketPredictorView(container) {
           <div>
             <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem;">
               <span class="badge-tag cyan">⚡ QUANTITATIVE ESTIMATION</span>
-              <span style="font-size: 0.8rem; color: #10b981; font-family: var(--font-mono); font-weight: 700;">PIN: 1661 VERIFIED</span>
+              <span style="font-size: 0.8rem; color: #10b981; font-family: var(--font-mono); font-weight: 700;">ACCESS VERIFIED</span>
             </div>
             <h1 style="font-size: 1.85rem; font-weight: 900; color: var(--text-main); letter-spacing: -0.02em;">
               Political News & Policy Market Predictor
@@ -2102,8 +2568,8 @@ function renderMarketPredictorView(container) {
             <button class="btn-secondary" style="font-size: 0.85rem;" onclick="window.toggleLeftMenu()">
               ☰ Switch Section
             </button>
-            <button class="btn-secondary" style="font-size: 0.85rem;" onclick="window.navigateToSection('survey')">
-              ← Return to Study
+            <button class="btn-secondary" style="font-size: 0.85rem;" onclick="window.navigateToSection('dashboard')">
+              ← Platform Hub
             </button>
           </div>
         </div>
