@@ -172,7 +172,9 @@ function generateRealisticDemoData(count = 50) {
         delay_growth_estimate,
         real_option_choice,
         option_switch_threshold,
-        confidence_rating: Math.floor(3 + Math.random() * 3)
+        confidence_rating: Math.floor(3 + Math.random() * 3),
+        age_bracket: Math.random() < 0.25 ? 'under_18' : '18_plus',
+        financial_experience: ['low', 'moderate', 'high'][Math.floor(Math.random() * 3)]
       },
       telemetry: {
         totalReactionTimeMs: Math.round(35000 + Math.random() * 45000),
@@ -309,7 +311,8 @@ function responsesToCsv(responses) {
     'session_id', 'timestamp', 'cohort', 'framing_job_choice', 'framing_discount_choice',
     'anchoring_house_estimate_thousands', 'loss_aversion_lambda', 'loss_aversion_sunk_choice',
     'delay_growth_estimate_dollars', 'true_cost_of_delay_dollars', 'real_option_choice',
-    'option_switch_threshold_dollars', 'reaction_time_ms', 'confidence_rating'
+    'option_switch_threshold_dollars', 'reaction_time_ms', 'confidence_rating',
+    'age_bracket', 'financial_experience'
   ];
   const rows = responses.map(r => [
     r.sessionId || '', r.timestamp || '', r.cohort || '',
@@ -318,7 +321,9 @@ function responsesToCsv(responses) {
     r.responses?.loss_aversion_sunk_choice || '', r.responses?.delay_growth_estimate || '',
     r.metrics?.trueCostOfDelay ?? 39408, r.responses?.real_option_choice || '',
     r.responses?.option_switch_threshold || '', r.telemetry?.totalReactionTimeMs ?? '',
-    r.responses?.confidence_rating ?? ''
+    r.responses?.confidence_rating ?? '',
+    r.responses?.age_bracket || r.demographics?.age_bracket || '',
+    r.responses?.financial_experience || r.demographics?.financial_experience || ''
   ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
   return [headers.join(','), ...rows].join('\n');
 }
