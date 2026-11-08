@@ -391,8 +391,8 @@ window.closeLeftMenu = () => {
 // Section Navigation Handler from Menu Bar
 window.navigateToSection = (targetMode) => {
   window.closeLeftMenu();
-  if (targetMode === 'survey') {
-    window.switchMode('survey');
+  if (targetMode === 'survey' || targetMode === 'about') {
+    window.switchMode(targetMode);
     return;
   }
   if (!state.isAdmin) {
@@ -423,9 +423,11 @@ function updateMenuState() {
   const itemSurvey = document.getElementById('menuItemSurvey');
   const itemAnalytics = document.getElementById('menuItemAnalytics');
   const itemMarket = document.getElementById('menuItemMarket');
+  const itemAbout = document.getElementById('menuItemAbout');
   if (itemSurvey) itemSurvey.classList.toggle('active', state.mode === 'survey');
   if (itemAnalytics) itemAnalytics.classList.toggle('active', state.mode === 'analytics');
   if (itemMarket) itemMarket.classList.toggle('active', state.mode === 'market');
+  if (itemAbout) itemAbout.classList.toggle('active', state.mode === 'about');
 
   // Update Lock Indicators in Drawer
   const lockAnalytics = document.getElementById('menuLockAnalytics');
@@ -462,6 +464,8 @@ function updateMenuState() {
       badge.innerHTML = `📊 Research`;
     } else if (state.mode === 'market') {
       badge.innerHTML = `⚡ Market Predictor`;
+    } else if (state.mode === 'about') {
+      badge.innerHTML = `💡 About VDL`;
     }
   }
 
@@ -571,9 +575,87 @@ function render() {
     renderAnalyticsPortal(container);
   } else if (state.mode === 'market') {
     renderMarketPredictorView(container);
+  } else if (state.mode === 'about') {
+    renderAboutView(container);
   } else {
     renderSurveyView(container);
   }
+}
+
+// -------------------------------------------------------------
+// ABOUT PROJECT VDL VIEW
+// -------------------------------------------------------------
+function renderAboutView(container) {
+  container.innerHTML = `
+    <div class="survey-wrapper" style="max-width: 800px; animation: cardFadeIn 0.3s ease;">
+      <div class="survey-card" style="margin-bottom: 1.75rem;">
+        <span class="badge-tag cyan">💡 Founder & Research Mission</span>
+        <h1 class="survey-title" style="font-size: 2.1rem; margin-bottom: 0.5rem;">About Project VDL</h1>
+        <p style="font-size: 1.05rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+          Veritas Decision Lab — Bridging the gap between theoretical economic models and real human behavior.
+        </p>
+
+        <!-- Section 1: About Lawton Linn -->
+        <div class="scenario-box" style="border-left-color: #0284c7; margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.6rem;">
+            👤 The Researcher & The Vision
+          </h3>
+          <p style="color: var(--text-body); font-size: 0.98rem; line-height: 1.8; margin-bottom: 0.85rem;">
+            My name is <strong>Lawton Linn</strong>, and I attend <strong>The Williams School</strong> in New London, Connecticut. During my junior year, I pursued coursework in Finance, Economics, and AP Computer Science & Programming. 
+          </p>
+          <p style="color: var(--text-body); font-size: 0.98rem; line-height: 1.8;">
+            Since then, I have been independently conducting research in behavioral economics. My central objective is reimagining how we deliver financial education: moving beyond sterile mathematical formulas and frictionless textbook models, and instead understanding how real human beings make decisions under uncertainty, emotional pressure, and cognitive biases. Financial literacy should reflect how people actually think and behave, not just what is expected of them in an academic lecture.
+          </p>
+        </div>
+
+        <!-- Section 2: Infrastructure & Ownership -->
+        <div class="scenario-box" style="border-left-color: #059669; margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.6rem;">
+            🖥️ 100% Privately Owned Infrastructure
+          </h3>
+          <p style="color: var(--text-body); font-size: 0.98rem; line-height: 1.8; margin-bottom: 0.85rem;">
+            The domain name you are currently visiting (<a href="https://www.veritasdecisionlab.com" style="color: var(--text-main); font-weight: 700; text-decoration: underline;">www.veritasdecisionlab.com</a>) is registered and owned exclusively by me. 
+          </p>
+          <p style="color: var(--text-body); font-size: 0.98rem; line-height: 1.8;">
+            Furthermore, the server delivering this web application is a privately managed VPS instance configured and administered directly by me. There are no third-party web builders, proprietary hosting lock-ins, or managed site containers running this platform — making this <strong>100% my own website, codebase, and server infrastructure</strong>.
+          </p>
+        </div>
+
+        <!-- Section 3: Development Philosophy & Open Source Attribution -->
+        <div class="scenario-box" style="border-left-color: #d97706; margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.6rem;">
+            🛠️ Development Philosophy & The Power of Open Source
+          </h3>
+          <p style="color: var(--text-body); font-size: 0.98rem; line-height: 1.8; margin-bottom: 0.85rem;">
+            Engineering a full-stack platform of this scope — featuring real-time data persistence, telemetry capture, SVG visualization engines, and statistical modeling — requires a broad spectrum of technical disciplines. As a high school student, I don't possess decades of software engineering experience yet.
+          </p>
+          <p style="color: var(--text-body); font-size: 0.98rem; line-height: 1.8;">
+            To bridge those knowledge gaps, I actively learn from the broader engineering community. I study open-source templates, community tutorials, foundational papers by Kahneman & Tversky, and modern web standards. By combining self-taught development with open-source tools and rigorous economic theory, I am able to turn conceptual research ideas into working, accessible software.
+          </p>
+        </div>
+
+        <!-- Section 4: Academic Integrity & Research Ethics -->
+        <div class="scenario-box" style="border-left-color: #7c3aed; margin-bottom: 2rem;">
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.6rem;">
+            🔒 Research Transparency & Data Ethics
+          </h3>
+          <p style="color: var(--text-body); font-size: 0.98rem; line-height: 1.8;">
+            Participant privacy is paramount. All decision responses collected through The Decision Lab are completely anonymized, stripped of identifying metadata, and stored securely on our private server for aggregate statistical synthesis (Framing Effect Chi-Square divergence, Loss Aversion λ estimation, and Exponential Growth Bias analysis).
+          </p>
+        </div>
+
+        <!-- Call to Action -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+          <button class="btn-secondary" onclick="window.toggleLeftMenu()">
+            ☰ Explore Navigation Menu
+          </button>
+          <button class="btn-primary" onclick="window.navigateToSection('survey')">
+            Take The Decision Lab Study →
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 // -------------------------------------------------------------
