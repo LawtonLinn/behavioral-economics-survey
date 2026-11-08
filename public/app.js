@@ -465,7 +465,7 @@ function updateMenuState() {
     } else if (state.mode === 'market') {
       badge.innerHTML = `⚡ Market Predictor`;
     } else if (state.mode === 'about') {
-      badge.innerHTML = `💡 About VDL`;
+      badge.innerHTML = `💡 About the Project`;
     }
   }
 
@@ -583,14 +583,14 @@ function render() {
 }
 
 // -------------------------------------------------------------
-// ABOUT PROJECT VDL VIEW
+// ABOUT THE PROJECT VIEW
 // -------------------------------------------------------------
 function renderAboutView(container) {
   container.innerHTML = `
     <div class="survey-wrapper" style="max-width: 800px; animation: cardFadeIn 0.3s ease;">
       <div class="survey-card" style="margin-bottom: 1.75rem;">
         <span class="badge-tag cyan">💡 Founder & Research Mission</span>
-        <h1 class="survey-title" style="font-size: 2.1rem; margin-bottom: 0.5rem;">About Project VDL</h1>
+        <h1 class="survey-title" style="font-size: 2.1rem; margin-bottom: 0.5rem;">About the Project</h1>
         <p style="font-size: 1.05rem; color: var(--text-muted); margin-bottom: 1.5rem;">
           Veritas Decision Lab — Bridging the gap between theoretical economic models and real human behavior.
         </p>

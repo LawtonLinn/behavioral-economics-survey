@@ -52,7 +52,16 @@
       <div class="drawer-nav-section-title">SECTIONS & RESEARCH MODULES</div>
 
       <nav class="drawer-nav">
-        <!-- 1. Behavioral Test Section -->
+        <!-- 1. About the Project (Placed at the top) -->
+        <button class="drawer-nav-item" id="menuItemAbout" onclick="window.navigateToSection('about')">
+          <span class="drawer-nav-icon">💡</span>
+          <div class="drawer-nav-text">
+            <div class="drawer-nav-label">About the Project</div>
+            <div class="drawer-nav-sub">Founder, Mission & Architecture</div>
+          </div>
+        </button>
+
+        <!-- 2. Behavioral Test Section -->
         <button class="drawer-nav-item active" id="menuItemSurvey" onclick="window.navigateToSection('survey')">
           <span class="drawer-nav-icon">🧠</span>
           <div class="drawer-nav-text">
@@ -61,7 +70,7 @@
           </div>
         </button>
 
-        <!-- 2. Research Analytics Section (Moved into the menu bar) -->
+        <!-- 3. Research Analytics Section -->
         <button class="drawer-nav-item" id="menuItemAnalytics" onclick="window.navigateToSection('analytics')">
           <span class="drawer-nav-icon">📊</span>
           <div class="drawer-nav-text">
@@ -71,7 +80,7 @@
           <span class="drawer-lock-indicator" id="menuLockAnalytics">🔒</span>
         </button>
 
-        <!-- 3. Political Market Predictor Section (Separate Section) -->
+        <!-- 4. Political Market Predictor Section -->
         <button class="drawer-nav-item" id="menuItemMarket" onclick="window.navigateToSection('market')">
           <span class="drawer-nav-icon">⚡</span>
           <div class="drawer-nav-text">
@@ -79,15 +88,6 @@
             <div class="drawer-nav-sub">News NLP & Monte Carlo Simulator</div>
           </div>
           <span class="drawer-lock-indicator" id="menuLockMarket">🔒</span>
-        </button>
-
-        <!-- 4. About Project VDL -->
-        <button class="drawer-nav-item" id="menuItemAbout" onclick="window.navigateToSection('about')">
-          <span class="drawer-nav-icon">💡</span>
-          <div class="drawer-nav-text">
-            <div class="drawer-nav-label">About Project VDL</div>
-            <div class="drawer-nav-sub">Founder, Mission & Architecture</div>
-          </div>
         </button>
       </nav>
     </div>
