@@ -491,7 +491,7 @@ window.promptAdminLogin = (targetMode = 'analytics') => {
   modal.innerHTML = `
     <div class="modal-content" style="max-width: 400px; text-align: center;">
       <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">${targetMode === 'market' ? '⚡' : '🔒'}</div>
-      <h3 style="color: #fff; font-size: 1.35rem; font-weight: 800; margin-bottom: 0.4rem;">${title}</h3>
+      <h3 style="color: var(--text-main); font-size: 1.35rem; font-weight: 800; margin-bottom: 0.4rem;">${title}</h3>
       <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
         ${desc}
       </p>
@@ -499,7 +499,7 @@ window.promptAdminLogin = (targetMode = 'analytics') => {
       <input type="password" 
              id="adminPinInput" 
              placeholder="••••" 
-             style="width: 100%; text-align: center; font-size: 1.5rem; letter-spacing: 0.25em; padding: 0.85rem; border-radius: 12px; background: rgba(10,14,26,0.95); border: 2px solid rgba(255,255,255,0.2); color: #fff; outline: none; margin-bottom: 1.25rem;" 
+             style="width: 100%; text-align: center; font-size: 1.5rem; letter-spacing: 0.25em; padding: 0.85rem; border-radius: 12px; background: var(--bg-surface); border: 2px solid var(--border-color); color: var(--text-main); outline: none; margin-bottom: 1.25rem;" 
              autofocus />
 
       <div style="display: flex; gap: 0.75rem;">
@@ -591,14 +591,14 @@ function renderSurveyView(container) {
     stepHtml = `
       <div class="survey-card">
         <span class="badge-tag cyan">✨ 2-Minute Decision Challenge</span>
-        <h1 class="survey-title">The Everyday Decision Game</h1>
+        <h1 class="survey-title">The Decision Lab</h1>
         <p class="survey-description">
           Welcome! You are about to face 7 quick real-life choices involving gut instincts, risk, and everyday dilemmas.
         </p>
 
         <div class="scenario-box">
-          <p style="margin-bottom: 0.5rem; font-weight: 700; color: #fff;">What to expect:</p>
-          <ul style="padding-left: 1.25rem; line-height: 1.7; font-size: 0.98rem; color: #cbd5e1;">
+          <p style="margin-bottom: 0.5rem; font-weight: 700; color: var(--text-main);">What to expect:</p>
+          <ul style="padding-left: 1.25rem; line-height: 1.7; font-size: 0.98rem; color: var(--text-body);">
             <li><strong>No finance or math skills required:</strong> Just pick what feels right to you.</li>
             <li><strong>Super quick:</strong> Takes only about 2 minutes.</li>
             <li><strong>100% Anonymous:</strong> Your responses are completely private.</li>
@@ -699,20 +699,20 @@ function renderSurveyView(container) {
         <span class="badge-tag amber">${step.emoji} Scenario 2 of 7</span>
         <h2 class="survey-title">What is This House Worth?</h2>
         <p class="survey-description">
-          A newly built modern 4-bedroom house with a big backyard, pool, and solar panels is being put on the market in a quiet suburban town.
+          A newly built modern 4-bedroom house with a big backyard, heated swimming pool, and rooftop solar panels is being put on the market in a desirable coastal Connecticut town. Located just minutes from the Long Island Sound shoreline, local harbor marina, and commuter rail into New York City, the property sits in a quiet, highly sought-after neighborhood known for top-rated schools and coastal community amenities.
         </p>
 
         <div class="scenario-box amber">
           <strong>The Agent's Comment:</strong>
           <p style="margin-top: 0.35rem;">
-            A local real estate agent took a quick look and remarked: 
-            <em style="color: #fff; font-size: 1.05rem;">"Hmm, I could see this listing for around <strong>$${anchorVal},000</strong>."</em>
+            A local real estate agent specializing in coastal Connecticut properties took a tour of the home, reviewed recent neighborhood comps, and remarked: 
+            <em style="color: var(--text-main); font-size: 1.05rem;">"Hmm, given this coastal location and features, I could see this listing for around <strong>$${anchorVal},000</strong>."</em>
           </p>
         </div>
 
         <div class="input-estimation-box">
           <div class="input-label-row">
-            <span style="font-weight: 700; color: #fff;">Based on your gut, what do you think it is really worth?</span>
+            <span style="font-weight: 700; color: var(--text-main);">Based on your gut, what do you think this coastal CT home is really worth?</span>
             <span style="color: var(--accent-amber); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;">(In Thousands $)</span>
           </div>
           <div class="currency-input-wrap">
@@ -954,14 +954,14 @@ function renderSurveyView(container) {
             <li><strong>Alex:</strong> Puts in <strong>$10,000 today</strong> and leaves it for all 24 years (it doubles 3 times: 8 × 3 = 24).</li>
             <li><strong>Sam:</strong> Waits <strong>8 years</strong> before starting, leaving $10,000 for only 16 years (it doubles only 2 times).</li>
           </ul>
-          <p style="margin-top: 0.85rem; font-weight: 700; color: #fff;">
+          <p style="margin-top: 0.85rem; font-weight: 700; color: var(--text-main);">
             Based purely on your gut feeling: How many total DOLLARS did Sam lose out on at the end of the 24 years, solely by waiting 8 years to start?
           </p>
         </div>
 
         <div class="input-estimation-box">
           <div class="input-label-row">
-            <span style="font-weight: 700; color: #fff;">Your Gut Guess (Dollars Lost by Waiting):</span>
+            <span style="font-weight: 700; color: var(--text-main);">Your Gut Guess (Dollars Lost by Waiting):</span>
             <span style="color: var(--accent-violet); font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600;">(USD $)</span>
           </div>
           <div class="currency-input-wrap">
@@ -1009,7 +1009,7 @@ function renderSurveyView(container) {
             <li><strong>If Subway Passes (50% chance):</strong> Foot traffic explodes. The shop makes a huge <strong>$140,000</strong> payoff (+$90,000 profit!).</li>
             <li><strong>If Subway Fails (50% chance):</strong> Foot traffic is dead. The shop only makes <strong>$20,000</strong> (-$30,000 loss).</li>
           </ul>
-          <p style="margin-top: 0.75rem; color: #fff;">
+          <p style="margin-top: 0.75rem; color: var(--text-main);">
             <strong>Your Options:</strong>
             <br/>• <strong>Choice 1 (Open Now):</strong> Expected average profit is <strong>+$30,000</strong>, but you take the risk right now.
             <br/>• <strong>Choice 2 (Pay to Reserve & Wait 1 Year):</strong> Wait until the city vote is 100% decided. If it passes, you build and make the big $90k profit. If it fails, you walk away and spend $0. 
@@ -1051,7 +1051,7 @@ function renderSurveyView(container) {
 
         <div class="input-estimation-box" style="margin-top: 1.5rem;">
           <div class="input-label-row">
-            <span style="font-weight: 700; color: #fff;">How much would you be willing to pay for certainty?</span>
+            <span style="font-weight: 700; color: var(--text-main);">How much would you be willing to pay for certainty?</span>
             <span id="optionThresholdDisplay" style="color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 800; font-size: 1.25rem;">
               $${state.responses.option_switch_threshold.toLocaleString()}
             </span>
@@ -1156,11 +1156,11 @@ function renderSurveyView(container) {
           </div>
         </div>
 
-        <div style="background: rgba(22,30,52,0.9); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.75rem; text-align: center;">
-          <h3 style="color: #fff; font-size: 1.25rem; font-weight: 800; margin-bottom: 0.4rem;">
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.75rem; text-align: center;">
+          <h3 style="color: var(--text-main); font-size: 1.25rem; font-weight: 800; margin-bottom: 0.4rem;">
             Thank you for taking the survey! 🙌
           </h3>
-          <p style="font-size: 0.95rem; color: #cbd5e1; max-width: 500px; margin: 0 auto;">
+          <p style="font-size: 0.95rem; color: var(--text-body); max-width: 500px; margin: 0 auto;">
             Your anonymous responses have been successfully recorded for the research study.
           </p>
         </div>
@@ -1217,7 +1217,7 @@ function renderConfidencePicker() {
   }
   return `
     <div class="confidence-box">
-      <span style="font-size: 0.9rem; font-weight: 600; color: #cbd5e1;">How confident do you feel in this choice?</span>
+      <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-body);">How confident do you feel in this choice?</span>
       <div class="confidence-stars">${starsHtml}</div>
     </div>
   `;
@@ -1259,8 +1259,8 @@ async function renderAnalyticsPortal(container) {
       <div class="analytics-header-row">
         <div>
           <span class="badge-tag cyan">🔒 Private Researcher Portal</span>
-          <h1 style="font-size: 2rem; font-weight: 900; color: #fff;">Behavioral Analytics Dashboard</h1>
-          <p style="font-size: 0.92rem; color: #94a3b8;">
+          <h1 style="font-size: 2rem; font-weight: 900; color: var(--text-main);">Behavioral Analytics Dashboard</h1>
+          <p style="font-size: 0.92rem; color: var(--text-muted);">
             Live statistical synthesis of Framing Effects, Loss Aversion, and Cost of Delay.
           </p>
         </div>
@@ -1382,13 +1382,13 @@ async function renderAnalyticsPortal(container) {
       <div class="data-table-card">
         <div class="table-header-row">
           <div>
-            <h3 style="color: #fff; font-size: 1.25rem; font-weight: 800;">Participant Responses</h3>
-            <p style="font-size: 0.85rem; color: #94a3b8;">
+            <h3 style="color: var(--text-main); font-size: 1.25rem; font-weight: 800;">Participant Responses</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
               Individual records with sub-second decision latencies
             </p>
           </div>
           <select id="cohortFilterSelect" 
-                  style="background: var(--bg-secondary); border: 1px solid var(--border-color); color: #fff; padding: 0.45rem 0.85rem; border-radius: 8px; font-size: 0.85rem;"
+                  style="background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-main); padding: 0.45rem 0.85rem; border-radius: 8px; font-size: 0.85rem;"
                   onchange="window.filterTable(this.value)">
             <option value="all">All Cohorts (α & β)</option>
             <option value="Alpha">Cohort Alpha (Gain/High)</option>
@@ -1775,7 +1775,7 @@ window.openAssetModal = (assetId) => {
         <div>
           <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
             <span style="font-size: 1.8rem;">${asset.icon}</span>
-            <h2 style="color: #fff; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.02em;">
+            <h2 style="color: var(--text-main); font-size: 1.6rem; font-weight: 900; letter-spacing: -0.02em;">
               ${asset.assetId} — ${asset.name}
             </h2>
             <span class="badge-tag cyan">${asset.category}</span>
@@ -1791,7 +1791,7 @@ window.openAssetModal = (assetId) => {
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem;">
         <div class="stat-card" style="padding: 0.75rem 1rem;">
           <span class="stat-label">Initial Baseline</span>
-          <span class="stat-value" style="font-size: 1.2rem; color: #fff;">$${Number(asset.currentPrice).toFixed(2)}</span>
+          <span class="stat-value" style="font-size: 1.2rem; color: var(--text-main);">$${Number(asset.currentPrice).toFixed(2)}</span>
         </div>
         <div class="stat-card" style="padding: 0.75rem 1rem;">
           <span class="stat-label">Projected T+${totalDays} Price</span>
@@ -1803,7 +1803,7 @@ window.openAssetModal = (assetId) => {
         </div>
         <div class="stat-card" style="padding: 0.75rem 1rem;">
           <span class="stat-label">95% Confidence Band</span>
-          <span class="stat-value" style="font-size: 1rem; color: #cbd5e1;">${asset.confidenceLower}% to ${asset.confidenceUpper}%</span>
+          <span class="stat-value" style="font-size: 1rem; color: var(--text-body);">${asset.confidenceLower}% to ${asset.confidenceUpper}%</span>
         </div>
         <div class="stat-card" style="padding: 0.75rem 1rem;">
           <span class="stat-label">Algorithmic Stance</span>
@@ -1859,8 +1859,8 @@ window.openAssetModal = (assetId) => {
       </div>
 
       <!-- Policy Transmission Context Notes -->
-      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1rem 1.25rem; font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
-        <b style="color: #fff;">Policy Transmission Dynamics:</b>
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem 1.25rem; font-size: 0.85rem; color: var(--text-body); line-height: 1.6;">
+        <b style="color: var(--text-main);">Policy Transmission Dynamics:</b>
         The candlestick path reflects initial shock absorption on days 1–3 followed by systemic drift according to the policy domain beta sensitivity (${result.analysis.domainLabel}). Intraday volatility captures market liquidity digestion and regulatory certainty revisions.
       </div>
     </div>
@@ -2009,7 +2009,7 @@ function renderMarketPredictorView(container) {
               <span class="badge-tag cyan">⚡ QUANTITATIVE ESTIMATION</span>
               <span style="font-size: 0.8rem; color: #10b981; font-family: var(--font-mono); font-weight: 700;">PIN: 1661 VERIFIED</span>
             </div>
-            <h1 style="font-size: 1.85rem; font-weight: 900; color: #fff; letter-spacing: -0.02em;">
+            <h1 style="font-size: 1.85rem; font-weight: 900; color: var(--text-main); letter-spacing: -0.02em;">
               Political News & Policy Market Predictor
             </h1>
             <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 680px; margin-top: 0.4rem;">
@@ -2047,12 +2047,12 @@ function renderMarketPredictorView(container) {
         <!-- TAB: TEXT -->
         ${state.market.activeTab === 'text' ? `
           <div>
-            <label style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.5rem;">
+            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-body); display: block; margin-bottom: 0.5rem;">
               Political News Article, Bill Text, or Speech Excerpt:
             </label>
             <textarea id="marketTextInput" 
                       rows="4" 
-                      style="width: 100%; padding: 0.85rem; border-radius: 10px; background: rgba(10,14,26,0.85); border: 1px solid rgba(255,255,255,0.18); color: #fff; font-family: inherit; font-size: 0.92rem; resize: vertical;" 
+                      style="width: 100%; padding: 0.85rem; border-radius: 10px; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-main); font-family: inherit; font-size: 0.92rem; resize: vertical;" 
                       placeholder="e.g. White House announces aggressive export curbs on AI chips, while considering broad reciprocal trade tariffs...">${currentText}</textarea>
           </div>
         ` : ''}
@@ -2060,7 +2060,7 @@ function renderMarketPredictorView(container) {
         <!-- TAB: URL -->
         ${state.market.activeTab === 'url' ? `
           <div>
-            <label style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.5rem;">
+            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-body); display: block; margin-bottom: 0.5rem;">
               Insert Live Political News Article URL:
             </label>
             <div style="display: flex; gap: 0.75rem;">
@@ -2068,7 +2068,7 @@ function renderMarketPredictorView(container) {
                      id="marketUrlInput" 
                      placeholder="https://www.reuters.com/... or https://bloomberg.com/..." 
                      value="${state.market.inputUrl}"
-                     style="flex: 1; padding: 0.75rem 1rem; border-radius: 10px; background: rgba(10,14,26,0.85); border: 1px solid rgba(255,255,255,0.18); color: #fff;" />
+                     style="flex: 1; padding: 0.75rem 1rem; border-radius: 10px; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-main);" />
               <button id="fetchUrlBtn" class="btn-primary" onclick="window.fetchUrlArticle()">
                 Extract & Populate →
               </button>
@@ -2081,9 +2081,9 @@ function renderMarketPredictorView(container) {
 
         <!-- TAB: UPLOAD -->
         ${state.market.activeTab === 'upload' ? `
-          <div style="text-align: center; padding: 2rem 1rem; border: 2px dashed rgba(255,255,255,0.2); border-radius: 12px; background: rgba(255,255,255,0.02);">
+          <div style="text-align: center; padding: 2rem 1rem; border: 2px dashed var(--border-color); border-radius: 12px; background: var(--bg-surface);">
             <div style="font-size: 2rem; margin-bottom: 0.5rem;">📄</div>
-            <h4 style="font-size: 1rem; color: #fff; margin-bottom: 0.3rem;">Upload Political Research Document or Press Release</h4>
+            <h4 style="font-size: 1rem; color: var(--text-main); margin-bottom: 0.3rem;">Upload Political Research Document or Press Release</h4>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
               Supports .txt, .md, .csv, and plain-text policy drafts.
             </p>
@@ -2097,7 +2097,7 @@ function renderMarketPredictorView(container) {
         <!-- TAB: PRESETS -->
         ${state.market.activeTab === 'preset' ? `
           <div>
-            <label style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.6rem;">
+            <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-body); display: block; margin-bottom: 0.6rem;">
               Select a Calibrated Political Benchmark Scenario:
             </label>
             <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
@@ -2111,27 +2111,27 @@ function renderMarketPredictorView(container) {
         ` : ''}
 
         <!-- Simulation Estimation Modifiers -->
-        <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.1); display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem;">
+        <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem;">
           <div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 0.35rem;">
-              <label style="font-size: 0.8rem; font-weight: 700; color: #cbd5e1;">Political Certainty</label>
-              <span id="certaintyDisplayVal" style="font-size: 0.8rem; font-family: var(--font-mono); color: #38bdf8;">${state.market.certainty}%</span>
+              <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-body);">Political Certainty</label>
+              <span id="certaintyDisplayVal" style="font-size: 0.8rem; font-family: var(--font-mono); color: #0284c7;">${state.market.certainty}%</span>
             </div>
             <input type="range" 
                    id="marketCertaintyInput" 
                    min="20" 
                    max="100" 
                    value="${state.market.certainty}" 
-                   style="width: 100%; accent-color: #38bdf8;"
+                   style="width: 100%; accent-color: #0284c7;"
                    oninput="document.getElementById('certaintyDisplayVal').innerText = this.value + '%'" />
             <span style="font-size: 0.72rem; color: var(--text-muted);">Probability that legislation/policy is enacted</span>
           </div>
 
           <div>
-            <label style="font-size: 0.8rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.35rem;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-body); display: block; margin-bottom: 0.35rem;">
               Forecast Horizon
             </label>
-            <select id="marketHorizonSelect" style="width: 100%; padding: 0.5rem; border-radius: 8px; background: rgba(10,14,26,0.9); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.85rem;">
+            <select id="marketHorizonSelect" style="width: 100%; padding: 0.5rem; border-radius: 8px; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-main); font-size: 0.85rem;">
               <option value="7" ${state.market.horizonDays === 7 ? 'selected' : ''}>7 Days (Immediate Shock Response)</option>
               <option value="30" ${state.market.horizonDays === 30 ? 'selected' : ''}>30 Days (Medium-term Absorption)</option>
               <option value="90" ${state.market.horizonDays === 90 ? 'selected' : ''}>90 Days (Quarterly Policy Cycle)</option>
@@ -2139,10 +2139,10 @@ function renderMarketPredictorView(container) {
           </div>
 
           <div>
-            <label style="font-size: 0.8rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 0.35rem;">
+            <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-body); display: block; margin-bottom: 0.35rem;">
               Directional Bias Override
             </label>
-            <select id="marketDirectionSelect" style="width: 100%; padding: 0.5rem; border-radius: 8px; background: rgba(10,14,26,0.9); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.85rem;">
+            <select id="marketDirectionSelect" style="width: 100%; padding: 0.5rem; border-radius: 8px; background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-main); font-size: 0.85rem;">
               <option value="auto" ${state.market.manualDirection === 'auto' ? 'selected' : ''}>🤖 Auto-Detect (NLP Sentiment)</option>
               <option value="bullish" ${state.market.manualDirection === 'bullish' ? 'selected' : ''}>📈 Force Pro-Growth / Bullish Bias</option>
               <option value="bearish" ${state.market.manualDirection === 'bearish' ? 'selected' : ''}>📉 Force Contractionary / Bearish Bias</option>
@@ -2161,11 +2161,11 @@ function renderMarketPredictorView(container) {
       ${result ? `
         <div style="animation: fadeIn 0.4s ease forwards;">
           <!-- Regime & Macro Card -->
-          <div class="card" style="border: 1px solid var(--border-color); margin-bottom: 1.5rem; background: #111827;">
+          <div class="card" style="border: 1px solid var(--border-color); margin-bottom: 1.5rem; background: var(--bg-card);">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
               <div>
                 <span class="badge-tag cyan">FORECAST REGIME</span>
-                <h3 style="font-size: 1.5rem; font-weight: 700; color: #fff; margin-top: 0.25rem;">
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-top: 0.25rem;">
                   ${result.regime}
                 </h3>
               </div>
@@ -2190,7 +2190,7 @@ function renderMarketPredictorView(container) {
             <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
               <span>Key Extracted Signal Tokens:</span>
               ${result.analysis.keywordsFound.map(kw => `
-                <span style="font-family: var(--font-mono); background: rgba(255,255,255,0.08); padding: 0.15rem 0.45rem; border-radius: 6px; font-size: 0.75rem; color: #cbd5e1;">
+                <span style="font-family: var(--font-mono); background: var(--bg-surface); border: 1px solid var(--border-color); padding: 0.15rem 0.45rem; border-radius: 6px; font-size: 0.75rem; color: var(--text-body);">
                   ${kw}
                 </span>
               `).join('')}
@@ -2201,14 +2201,14 @@ function renderMarketPredictorView(container) {
           <div class="pmp-grid-2" style="margin-bottom: 1.5rem;">
             <!-- Winners -->
             <div class="card" style="border-left: 4px solid #10b981;">
-              <h4 style="font-size: 1rem; font-weight: 800; color: #34d399; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+              <h4 style="font-size: 1rem; font-weight: 800; color: #059669; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
                 <span>🚀</span> Top Expected Beneficiaries
               </h4>
               <div style="display: flex; flex-direction: column; gap: 0.6rem;">
                 ${result.topWinners.length ? result.topWinners.map(w => `
                   <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(16, 185, 129, 0.08); border-radius: 8px;">
                     <div>
-                      <b style="color: #fff; font-size: 0.9rem;">${w.icon} ${w.assetId}</b>
+                      <b style="color: var(--text-main); font-size: 0.9rem;">${w.icon} ${w.assetId}</b>
                       <span style="font-size: 0.78rem; color: var(--text-muted); margin-left: 0.5rem;">${w.name}</span>
                     </div>
                     <span class="pill-bullish" style="font-weight: 700;">+${w.expectedShiftPct}%</span>
@@ -2219,14 +2219,14 @@ function renderMarketPredictorView(container) {
 
             <!-- Losers -->
             <div class="card" style="border-left: 4px solid #f43f5e;">
-              <h4 style="font-size: 1rem; font-weight: 800; color: #fb7185; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+              <h4 style="font-size: 1rem; font-weight: 800; color: #e11d48; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
                 <span>⚠️</span> Top Expected Headwinds
               </h4>
               <div style="display: flex; flex-direction: column; gap: 0.6rem;">
                 ${result.topLosers.length ? result.topLosers.map(l => `
                   <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(244, 63, 94, 0.08); border-radius: 8px;">
                     <div>
-                      <b style="color: #fff; font-size: 0.9rem;">${l.icon} ${l.assetId}</b>
+                      <b style="color: var(--text-main); font-size: 0.9rem;">${l.icon} ${l.assetId}</b>
                       <span style="font-size: 0.78rem; color: var(--text-muted); margin-left: 0.5rem;">${l.name}</span>
                     </div>
                     <span class="pill-bearish" style="font-weight: 700;">${l.expectedShiftPct}%</span>
@@ -2239,7 +2239,7 @@ function renderMarketPredictorView(container) {
           <!-- All Asset Classes Breakdown Header & View Switcher -->
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
             <div>
-              <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 0.2rem;">
+              <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.2rem;">
                 Multi-Asset Forecast Models (${result.horizonDays}-Day Horizon)
               </h3>
               <p style="font-size: 0.8rem; color: var(--text-muted);">
@@ -2383,8 +2383,8 @@ function renderMarketPredictorView(container) {
                     <div>
                       <div style="display: flex; align-items: center; gap: 0.4rem;">
                         <span style="font-size: 1.25rem;">${asset.icon}</span>
-                        <strong style="color: #fff; font-size: 1rem; letter-spacing: -0.01em;">${asset.assetId}</strong>
-                        <span style="font-size: 0.72rem; padding: 0.15rem 0.45rem; border-radius: 4px; background: rgba(255,255,255,0.06); color: var(--text-muted); font-family: var(--font-mono);">${asset.category}</span>
+                        <strong style="color: var(--text-main); font-size: 1rem; letter-spacing: -0.01em;">${asset.assetId}</strong>
+                        <span style="font-size: 0.72rem; padding: 0.15rem 0.45rem; border-radius: 4px; background: var(--bg-surface); color: var(--text-muted); font-family: var(--font-mono);">${asset.category}</span>
                       </div>
                       <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">${asset.name}</div>
                     </div>
@@ -2393,7 +2393,7 @@ function renderMarketPredictorView(container) {
                         ${isUp ? '+' : ''}${asset.expectedShiftPct}%
                       </span>
                       <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem; font-family: var(--font-mono);">
-                        $${Number(asset.currentPrice).toFixed(2)} → <b style="color: #fff;">$${Number(asset.projectedPrice).toFixed(2)}</b>
+                        $${Number(asset.currentPrice).toFixed(2)} → <b style="color: var(--text-main);">$${Number(asset.projectedPrice).toFixed(2)}</b>
                       </div>
                     </div>
                   </div>
@@ -2402,9 +2402,9 @@ function renderMarketPredictorView(container) {
                   <div class="candlestick-wrapper">
                     <div class="candle-hover-overlay">
                       <span>O: <b>$${Number(lastCandle.open).toFixed(2)}</b></span>
-                      <span>H: <b style="color: #34d399;">$${Number(lastCandle.high).toFixed(2)}</b></span>
-                      <span>L: <b style="color: #fb7185;">$${Number(lastCandle.low).toFixed(2)}</b></span>
-                      <span>C: <b style="color: ${lastCandle.close >= lastCandle.open ? '#34d399' : '#fb7185'};">$${Number(lastCandle.close).toFixed(2)}</b></span>
+                      <span>H: <b style="color: #059669;">$${Number(lastCandle.high).toFixed(2)}</b></span>
+                      <span>L: <b style="color: #e11d48;">$${Number(lastCandle.low).toFixed(2)}</b></span>
+                      <span>C: <b style="color: ${lastCandle.close >= lastCandle.open ? '#059669' : '#e11d48'};">$${Number(lastCandle.close).toFixed(2)}</b></span>
                     </div>
 
                     <svg class="candlestick-svg" viewBox="0 0 ${svgW} ${svgH}">
@@ -2439,8 +2439,8 @@ function renderMarketPredictorView(container) {
                   </div>
 
                   <!-- Footer: Confidence Range & Strategy Stance -->
-                  <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.6rem;">
-                    <span>95% Shock Band: <b style="color: #cbd5e1;">${asset.confidenceLower}% to ${asset.confidenceUpper}%</b></span>
+                  <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 0.6rem;">
+                    <span>95% Shock Band: <b style="color: var(--text-body);">${asset.confidenceLower}% to ${asset.confidenceUpper}%</b></span>
                     <span style="color: ${accentColor}; font-weight: 800;">${asset.stance} ↗</span>
                   </div>
                 </div>
@@ -2449,9 +2449,9 @@ function renderMarketPredictorView(container) {
           </div>
         </div>
       ` : `
-        <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.15); border-radius: 16px;">
+        <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted); border: 1px dashed var(--border-color); border-radius: 16px; background: var(--bg-surface);">
           <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📊</div>
-          <p style="font-size: 0.95rem; color: #cbd5e1; font-weight: 600;">Prediction engine ready.</p>
+          <p style="font-size: 0.95rem; color: var(--text-body); font-weight: 600;">Prediction engine ready.</p>
           <p style="font-size: 0.85rem; color: var(--text-muted);">
             Click <b>"Run Prediction Engine"</b> above to extract political sentiment and project asset vectors.
           </p>

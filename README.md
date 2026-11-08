@@ -1,4 +1,4 @@
-# The Everyday Decision Game
+# The Decision Lab
 ### User-Friendly Behavioral Economics Experiment & Live Synthesis Platform
 
 This platform investigates three foundational behavioral economics phenomena using **everyday, accessible scenarios** designed for people with **zero financial or mathematical background**:
@@ -65,7 +65,7 @@ If people are in the same house, classroom, or office:
    - Gain frame: *Save 200 jobs for sure* vs *1-in-3 chance to save all 600*.
    - Loss frame: *400 lose jobs for sure* vs *1-in-3 chance nobody loses jobs*.
 2. **What is This House Worth? (Price Anchoring):**
-   - 4-bedroom house with pool and solar panels. 
+   - 4-bedroom house with pool and solar panels in a coastal Connecticut town. 
    - An agent off-handedly mentions **$850,000** (High Anchor) vs **$350,000** (Low Anchor). Tests how arbitrary initial numbers anchor human valuations.
 3. **The Store Checkout (Payment Framing):**
    - $100 grocery bill with **$5 cash discount** ($95 total) vs $95 bill with **$5 card fee** ($100 total). Tests psychological pain of penalties vs foregone gains.
