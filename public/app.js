@@ -51,6 +51,7 @@ const state = {
 
 const STEPS = [
   { id: 'welcome', name: 'Start', emoji: '🚀' },
+  { id: 'demographics', name: 'Context', emoji: '📋' },
   { id: 'framing_jobs', name: 'Rescue Plan', emoji: '🏭' },
   { id: 'anchoring_quote', name: 'House Value', emoji: '🏡' },
   { id: 'framing_discount', name: 'Store Checkout', emoji: '🛒' },
@@ -58,7 +59,6 @@ const STEPS = [
   { id: 'loss_sunk', name: 'Selling Dilemma', emoji: '📦' },
   { id: 'rule72_delay', name: 'Waiting Cost', emoji: '📈' },
   { id: 'real_options', name: 'Bakery Decision', emoji: '🥐' },
-  { id: 'demographics', name: 'Context', emoji: '📋' },
   { id: 'debrief', name: 'Your Results', emoji: '🧠' }
 ];
 
@@ -228,7 +228,7 @@ function handleNextStep() {
 }
 
 function handlePrevStep() {
-  if (isNavigating || state.currentStepIndex <= 1) return;
+  if (isNavigating || state.currentStepIndex <= 0) return;
   triggerHaptic(8);
   isNavigating = true;
   const card = document.querySelector('.survey-card');
@@ -1153,7 +1153,103 @@ function renderSurveyView(container) {
 
         <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
           <button class="btn-primary" onclick="window.advanceStep()">
-            Start Challenge (2 Mins) →
+            Start Decision Study (2 Mins) →
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  // 1b. OPTIONAL DEMOGRAPHIC STEP (BEFORE SURVEY / SCENARIOS)
+  else if (step.id === 'demographics') {
+    stepHtml = `
+      <div class="survey-card">
+        <span class="badge-tag cyan">📋 Optional Research Context</span>
+        <h2 class="survey-title">Optional: Contextual Research Details</h2>
+        <p class="survey-description">
+          Help us study how background shapes decision styles. All responses are completely anonymous.
+        </p>
+
+        <div class="demographic-container">
+          <!-- Input 1: Age Bracket -->
+          <div class="demographic-group" role="radiogroup" aria-labelledby="ageGroupTitle">
+            <div class="demographic-label-row">
+              <span class="demographic-title" id="ageGroupTitle">
+                <span>🎂</span> Age Bracket
+              </span>
+              <span class="demographic-subtitle">Select one</span>
+            </div>
+            <div class="demographic-pills-grid">
+              <button type="button" 
+                      class="demographic-pill ${state.responses.age_bracket === 'under_18' ? 'selected' : ''}"
+                      data-age-bracket="under_18"
+                      role="radio"
+                      aria-checked="${state.responses.age_bracket === 'under_18' ? 'true' : 'false'}"
+                      onclick="window.selectAgeBracket('under_18')">
+                <span class="demographic-pill-label">Under 18</span>
+                <span class="demographic-pill-desc">High school / Student</span>
+              </button>
+
+              <button type="button" 
+                      class="demographic-pill ${state.responses.age_bracket === '18_plus' ? 'selected' : ''}"
+                      data-age-bracket="18_plus"
+                      role="radio"
+                      aria-checked="${state.responses.age_bracket === '18_plus' ? 'true' : 'false'}"
+                      onclick="window.selectAgeBracket('18_plus')">
+                <span class="demographic-pill-label">18 or older</span>
+                <span class="demographic-pill-desc">Adult participant</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Input 2: Financial Experience -->
+          <div class="demographic-group" role="radiogroup" aria-labelledby="finExpTitle">
+            <div class="demographic-label-row">
+              <span class="demographic-title" id="finExpTitle">
+                <span>📊</span> Financial Experience
+              </span>
+              <span class="demographic-subtitle">Select one</span>
+            </div>
+            <div class="demographic-pills-grid">
+              <button type="button" 
+                      class="demographic-pill ${state.responses.financial_experience === 'low' ? 'selected' : ''}"
+                      data-fin-exp="low"
+                      role="radio"
+                      aria-checked="${state.responses.financial_experience === 'low' ? 'true' : 'false'}"
+                      onclick="window.selectFinancialExperience('low')">
+                <span class="demographic-pill-label">Low</span>
+                <span class="demographic-pill-desc">Little to no investing, budget, or finance background</span>
+              </button>
+
+              <button type="button" 
+                      class="demographic-pill ${state.responses.financial_experience === 'moderate' ? 'selected' : ''}"
+                      data-fin-exp="moderate"
+                      role="radio"
+                      aria-checked="${state.responses.financial_experience === 'moderate' ? 'true' : 'false'}"
+                      onclick="window.selectFinancialExperience('moderate')">
+                <span class="demographic-pill-label">Moderate</span>
+                <span class="demographic-pill-desc">Basic budgeting, everyday banking, general familiarity</span>
+              </button>
+
+              <button type="button" 
+                      class="demographic-pill ${state.responses.financial_experience === 'high' ? 'selected' : ''}"
+                      data-fin-exp="high"
+                      role="radio"
+                      aria-checked="${state.responses.financial_experience === 'high' ? 'true' : 'false'}"
+                      onclick="window.selectFinancialExperience('high')">
+                <span class="demographic-pill-label">High</span>
+                <span class="demographic-pill-desc">Active investing, coursework, or formal finance experience</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="demographic-actions-row">
+          <button class="btn-primary" style="width: 100%; max-width: 380px; justify-content: center; font-size: 1rem; padding: 0.95rem;" onclick="window.advanceStep()">
+            Continue to Study (Scenario 1 of 7) →
+          </button>
+          <button type="button" class="demographic-skip-btn" onclick="window.skipDemographicsAndContinue()">
+            Skip and start study →
           </button>
         </div>
       </div>
@@ -1621,108 +1717,14 @@ function renderSurveyView(container) {
         <div class="survey-footer">
           <button class="btn-secondary" onclick="window.prevStep()">← Previous</button>
           <button class="btn-primary" id="surveyNextBtn" onclick="window.advanceStep()" ${!state.responses.real_option_choice ? 'disabled' : ''}>
-            Continue to Results →
-          </button>
-        </div>
-      </div>
-    `;
-  }
-
-  // 8b. OPTIONAL DEMOGRAPHIC STEP
-  else if (step.id === 'demographics') {
-    stepHtml = `
-      <div class="survey-card">
-        <span class="badge-tag cyan">📋 Optional Research Context</span>
-        <h2 class="survey-title">Optional: Contextual Research Details</h2>
-        <p class="survey-description">
-          Help us study how background shapes decision styles. All responses are completely anonymous.
-        </p>
-
-        <div class="demographic-container">
-          <!-- Input 1: Age Bracket -->
-          <div class="demographic-group" role="radiogroup" aria-labelledby="ageGroupTitle">
-            <div class="demographic-label-row">
-              <span class="demographic-title" id="ageGroupTitle">
-                <span>🎂</span> Age Bracket
-              </span>
-              <span class="demographic-subtitle">Select one</span>
-            </div>
-            <div class="demographic-pills-grid">
-              <button type="button" 
-                      class="demographic-pill ${state.responses.age_bracket === 'under_18' ? 'selected' : ''}"
-                      data-age-bracket="under_18"
-                      role="radio"
-                      aria-checked="${state.responses.age_bracket === 'under_18' ? 'true' : 'false'}"
-                      onclick="window.selectAgeBracket('under_18')">
-                <span class="demographic-pill-label">Under 18</span>
-                <span class="demographic-pill-desc">High school / Student</span>
-              </button>
-
-              <button type="button" 
-                      class="demographic-pill ${state.responses.age_bracket === '18_plus' ? 'selected' : ''}"
-                      data-age-bracket="18_plus"
-                      role="radio"
-                      aria-checked="${state.responses.age_bracket === '18_plus' ? 'true' : 'false'}"
-                      onclick="window.selectAgeBracket('18_plus')">
-                <span class="demographic-pill-label">18 or older</span>
-                <span class="demographic-pill-desc">Adult participant</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Input 2: Financial Experience -->
-          <div class="demographic-group" role="radiogroup" aria-labelledby="finExpTitle">
-            <div class="demographic-label-row">
-              <span class="demographic-title" id="finExpTitle">
-                <span>📊</span> Financial Experience
-              </span>
-              <span class="demographic-subtitle">Select one</span>
-            </div>
-            <div class="demographic-pills-grid">
-              <button type="button" 
-                      class="demographic-pill ${state.responses.financial_experience === 'low' ? 'selected' : ''}"
-                      data-fin-exp="low"
-                      role="radio"
-                      aria-checked="${state.responses.financial_experience === 'low' ? 'true' : 'false'}"
-                      onclick="window.selectFinancialExperience('low')">
-                <span class="demographic-pill-label">Low</span>
-                <span class="demographic-pill-desc">Little to no investing, budget, or finance background</span>
-              </button>
-
-              <button type="button" 
-                      class="demographic-pill ${state.responses.financial_experience === 'moderate' ? 'selected' : ''}"
-                      data-fin-exp="moderate"
-                      role="radio"
-                      aria-checked="${state.responses.financial_experience === 'moderate' ? 'true' : 'false'}"
-                      onclick="window.selectFinancialExperience('moderate')">
-                <span class="demographic-pill-label">Moderate</span>
-                <span class="demographic-pill-desc">Basic budgeting, everyday banking, general familiarity</span>
-              </button>
-
-              <button type="button" 
-                      class="demographic-pill ${state.responses.financial_experience === 'high' ? 'selected' : ''}"
-                      data-fin-exp="high"
-                      role="radio"
-                      aria-checked="${state.responses.financial_experience === 'high' ? 'true' : 'false'}"
-                      onclick="window.selectFinancialExperience('high')">
-                <span class="demographic-pill-label">High</span>
-                <span class="demographic-pill-desc">Active investing, coursework, or formal finance experience</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="demographic-actions-row">
-          <button class="btn-primary" style="width: 100%; max-width: 380px; justify-content: center; font-size: 1rem; padding: 0.95rem;" onclick="window.submitDemographicsAndFinish()">
             Submit & See My Personality →
           </button>
-          <button type="button" class="demographic-skip-btn" onclick="window.skipDemographicsAndFinish()">
-            Skip and see results →
-          </button>
         </div>
       </div>
     `;
   }
+
+
 
   // 9. DEBRIEF
   else if (step.id === 'debrief') {
@@ -1819,15 +1821,20 @@ function renderSurveyView(container) {
 
   // Progress Bar
   if (step.id !== 'welcome' && step.id !== 'debrief') {
+    const isDemo = step.id === 'demographics';
+    const qNum = isDemo ? 0 : state.currentStepIndex - 1; // 1 to 7
+    const currentProgressPct = isDemo ? 5 : Math.round((qNum / 7) * 100);
+    const progressLabel = isDemo ? 'Optional Background' : `Question ${qNum} of 7`;
+
     container.innerHTML = `
       <div class="survey-wrapper">
         <div class="survey-progress-bar-container">
           <div class="progress-meta">
             <span class="step-name">${step.emoji} ${step.name}</span>
-            <span style="font-family: var(--font-mono); font-size: 0.85rem;">${step.id === "demographics" ? "Optional Step" : `Question ${state.currentStepIndex} of 7`}</span>
+            <span style="font-family: var(--font-mono); font-size: 0.85rem;">${progressLabel}</span>
           </div>
           <div class="progress-track">
-            <div class="progress-fill" style="width: ${progressPct}%;"></div>
+            <div class="progress-fill" style="width: ${currentProgressPct}%;"></div>
           </div>
         </div>
         ${stepHtml}
@@ -2181,18 +2188,11 @@ window.selectFinancialExperience = (exp) => {
   });
 };
 
-window.submitDemographicsAndFinish = () => {
-  telemetry.finishStep('demographics');
-  triggerHaptic(12);
-  submitSurvey();
-};
-
-window.skipDemographicsAndFinish = () => {
+window.skipDemographicsAndContinue = () => {
   state.responses.age_bracket = null;
   state.responses.financial_experience = null;
-  telemetry.finishStep('demographics');
   triggerHaptic(10);
-  submitSurvey();
+  window.advanceStep();
 };
 
 window.advanceStep = handleNextStep;
